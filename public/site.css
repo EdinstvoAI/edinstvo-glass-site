@@ -152,3 +152,8 @@ dialog.search small { display: block; color: var(--muted); }
   .playground { grid-template-columns: 1fr; }
   .playground .stage { min-height: 320px; }
 }
+
+.lights { position: sticky; top: 96px; z-index: 5; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 20px; padding: 14px 16px; border: 1px solid var(--line, rgb(128 128 128 / .3)); border-radius: 14px; background: var(--bg, Canvas); font-size: 13px; }
+.lights label { display: flex; flex-direction: column; gap: 6px; }
+.lights label:has([type=checkbox]) { flex-direction: row; align-items: center; }
+.lights input[type=range], .lights input[type=color] { width: 100%; }

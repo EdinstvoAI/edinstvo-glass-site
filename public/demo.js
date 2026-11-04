@@ -1,5 +1,5 @@
 const base = document.body.dataset.base;
-const { defaults, motionDefaults, motionRanges, ranges } = await import(`${base}/glass/index.js`);
+const { defaults, motionDefaults, motionRanges, ranges, setSceneLight } = await import(`${base}/glass/index.js`);
 await import(`${base}/glass/define.js`);
 
 function paint(canvas) {
@@ -107,4 +107,27 @@ if (playground) {
     controls.append(label);
   }
   write();
+}
+
+for (const panel of document.querySelectorAll("[data-lights]")) {
+  const read = () => {
+    const light = {};
+    for (const input of panel.querySelectorAll("input:not([type=checkbox])")) light[input.name] = input.type === "range" ? Number(input.value) : input.value;
+    setSceneLight(light);
+  };
+  panel.addEventListener("input", (event) => {
+    if (event.target.type !== "checkbox") return read();
+    for (const glass of document.querySelectorAll(".stage edinstvo-glass")) {
+      if (event.target.checked) {
+        if (!glass.hasAttribute(event.target.name)) {
+          glass.setAttribute(event.target.name, "0.7");
+          glass.dataset.added = (glass.dataset.added ?? "") + event.target.name + " ";
+        }
+      } else if (glass.dataset.added?.includes(event.target.name)) {
+        glass.removeAttribute(event.target.name);
+        glass.dataset.added = glass.dataset.added.replace(event.target.name + " ", "");
+      }
+    }
+  });
+  read();
 }

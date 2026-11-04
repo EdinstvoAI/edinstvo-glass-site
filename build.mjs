@@ -8,7 +8,7 @@ const version = JSON.parse(readFileSync("node_modules/@edinstvo/glass/package.js
 const nav = [
   ["Getting started", [["", "Introduction"], ["installation", "Installation"], ["first", "Your first glass"], ["frameworks", "Frameworks"]]],
   ["Concepts", [["how", "How glass works"], ["web-components", "Web components"], ["backdrop", "Backdrop"], ["layers", "Layers"]]],
-  ["Settings", [["material", "Material"], ["motion", "Motion"], ["merge", "Merge"]]],
+  ["Settings", [["material", "Material"], ["lighting", "Lighting"], ["motion", "Motion"], ["merge", "Merge"]]],
   ["Guides", [["text-on-glass", "Text on glass"], ["text-behind-glass", "Text behind glass"], ["gradients", "CSS gradients"], ["cross-origin", "Images from other domains"], ["figma", "Figma"]]],
   ["Try it", [["playground", "Playground"], ["examples", "Examples"]]],
   ["Reference", [["reference", "API"], ["problems", "Common problems"]]],
