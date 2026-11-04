@@ -28,7 +28,7 @@ jobs:
       - run: npm i
       - run: npm run build
         env:
-          BASE: /edinstvo-glass-site
+          BASE: ""
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
