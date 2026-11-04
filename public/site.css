@@ -162,3 +162,8 @@ dialog.search small { display: block; color: var(--muted); }
 .readout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
 .readout b { display: block; font-size: 12px; font-weight: 400; opacity: .7; }
 .readout output { font-size: 24px; font-weight: 700; }
+.stage .square { width: 130px; height: 130px; --glass-radius: 24px; }
+.stage .reset { right: auto; left: 12px; border: 0; font: inherit; font-size: 12px; display: none; }
+:root[data-photo] .stage .reset { display: block; }
+.shapes { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.shapes button { padding: 6px 14px; border: 1px solid var(--line, rgb(128 128 128 / .3)); border-radius: 99px; background: none; color: inherit; font: inherit; font-size: 13px; cursor: pointer; }

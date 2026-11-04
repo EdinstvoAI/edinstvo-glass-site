@@ -2,7 +2,38 @@ const base = document.body.dataset.base;
 const { defaults, motionDefaults, motionRanges, ranges, setSceneLight } = await import(`${base}/glass/index.js`);
 await import(`${base}/glass/define.js`);
 
+const ru = location.pathname.includes("/ru/");
 let photo = null;
+
+function repaint() {
+  document.documentElement.toggleAttribute("data-photo", Boolean(photo));
+  for (const stage of document.querySelectorAll("[data-stage]")) {
+    paint(stage.querySelector(":scope > canvas"));
+    for (const glass of stage.querySelectorAll("edinstvo-glass, edinstvo-glass-group")) glass.invalidate();
+  }
+}
+
+async function usePhoto(file) {
+  const image = await createImageBitmap(file);
+  const scale = Math.min(1800 / Math.max(image.width, image.height), 1);
+  const canvas = Object.assign(document.createElement("canvas"), { width: image.width * scale, height: image.height * scale });
+  canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+  photo = canvas;
+  try {
+    localStorage.setItem("glass-photo", canvas.toDataURL("image/jpeg", 0.85));
+  } catch {}
+  repaint();
+}
+
+async function restorePhoto() {
+  try {
+    const saved = localStorage.getItem("glass-photo");
+    if (saved) photo = await createImageBitmap(await (await fetch(saved)).blob());
+  } catch {}
+}
+
+await restorePhoto();
+document.documentElement.toggleAttribute("data-photo", Boolean(photo));
 
 function paint(canvas) {
   const { width, height } = canvas.parentElement.getBoundingClientRect();
@@ -60,21 +91,22 @@ for (const stage of document.querySelectorAll("[data-stage]")) {
   stage.querySelectorAll("[data-drag]").forEach(drag);
   const upload = document.createElement("label");
   upload.className = "upload";
-  upload.textContent = location.pathname.includes("/ru/") ? "Своё изображение" : "Your image";
+  upload.textContent = ru ? "Своё изображение" : "Your image";
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
   input.hidden = true;
-  input.addEventListener("change", async () => {
-    if (!input.files[0]) return;
-    photo = await createImageBitmap(input.files[0]);
-    for (const other of document.querySelectorAll("[data-stage]")) {
-      paint(other.querySelector(":scope > canvas"));
-      for (const glass of other.querySelectorAll("edinstvo-glass, edinstvo-glass-group")) glass.invalidate();
-    }
-  });
+  input.addEventListener("change", () => input.files[0] && usePhoto(input.files[0]));
   upload.append(input);
-  stage.append(upload);
+  const reset = Object.assign(document.createElement("button"), { type: "button", className: "upload reset", textContent: ru ? "Сбросить" : "Reset" });
+  reset.addEventListener("click", () => {
+    photo = null;
+    try {
+      localStorage.removeItem("glass-photo");
+    } catch {}
+    repaint();
+  });
+  stage.append(upload, reset);
 }
 
 for (const toggle of document.querySelectorAll("[data-toggle]")) {
@@ -105,7 +137,7 @@ for (const stage of document.querySelectorAll("[data-drift]")) {
 
 const playground = document.querySelector("[data-playground]");
 if (playground) {
-  const glass = playground.querySelector("edinstvo-glass");
+  const stage = playground.querySelector(".stage");
   const controls = playground.querySelector(".controls");
   const output = document.querySelector("#snippet");
   const start = { ...defaults, ...motionDefaults };
@@ -125,12 +157,28 @@ if (playground) {
       const number = +(+input.value).toFixed(2);
       value.textContent = number.toFixed(2);
       changed[key] = number;
-      glass.setAttribute(name(key), number);
+      for (const piece of stage.querySelectorAll("edinstvo-glass")) piece.setAttribute(name(key), number);
       write();
     });
     controls.append(label);
   }
   write();
+  for (const button of document.querySelectorAll("[data-shape]")) {
+    button.addEventListener("click", () => {
+      if (button.dataset.shape === "clear") {
+        stage.querySelectorAll("[data-added-shape]").forEach((piece) => piece.remove());
+        return;
+      }
+      const piece = document.createElement("edinstvo-glass");
+      piece.className = button.dataset.shape;
+      piece.dataset.drag = "";
+      piece.dataset.addedShape = "";
+      piece.style.cssText = `position:absolute;left:${10 + Math.random() * 50}%;top:${10 + Math.random() * 40}%`;
+      for (const [key, value] of Object.entries(changed)) piece.setAttribute(name(key), value);
+      stage.append(piece);
+      drag(piece);
+    });
+  }
 }
 
 for (const panel of document.querySelectorAll("[data-lights]")) {
