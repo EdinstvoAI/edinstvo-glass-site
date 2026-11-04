@@ -7,6 +7,6 @@
     "dev": "node build.mjs && node serve.mjs"
   },
   "dependencies": {
-    "@edinstvo/glass": "^1.1.0"
+    "@edinstvo/glass": "^1.1.1"
   }
 }
