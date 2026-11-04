@@ -9,7 +9,7 @@ const nav = [
   ["Getting started", [["", "Introduction"], ["installation", "Installation"], ["frameworks", "Frameworks"]]],
   ["Essentials", [["material", "Material"], ["motion", "Motion"], ["merge", "Merge"], ["layers", "Layers"], ["backdrop", "Backdrop"]]],
   ["Try it", [["playground", "Playground"], ["examples", "Examples"]]],
-  ["Reference", [["reference", "API"], ["limits", "Limits"], ["troubleshooting", "Troubleshooting"]]],
+  ["Reference", [["reference", "API"], ["limits", "Limits"], ["troubleshooting", "Troubleshooting"], ["figma", "Figma"]]],
 ];
 
 const ru = JSON.parse(readFileSync("content/ru.json", "utf8"));
@@ -81,7 +81,7 @@ ${live ? `<script type="module" src="${base}/demo.js"></script>` : ""}
   <nav class="main">
     <a href="${href("")}">${t("Docs")}</a>
     <a href="${href("playground")}">${t("Playground")}</a>
-    <span>Figma <small>${t("Soon")}</small></span>
+    <a href="${href("figma")}">Figma</a>
   </nav>
   <div class="tools">
     <button class="tool search-open" type="button" aria-label="${t("Search")}"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>

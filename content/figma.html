@@ -1,0 +1,20 @@
+<p>Design with the Glass effect built into Figma, then ship with this package. Most settings share a name, so the handoff is a short list of values.</p>
+<h2>Settings</h2>
+<p>These are starting values. The two renderers differ, so check the result on the real backdrop and adjust by eye.</p>
+<table>
+<tr><th>Figma</th><th>Package</th><th>How to convert</th></tr>
+<tr><td><code>Light</code></td><td><code>light</code></td><td>Same value, as a fraction. 30% is 0.3.</td></tr>
+<tr><td><code>Light angle</code></td><td><code>light-angle</code></td><td>Same degrees. Check the direction on the first element.</td></tr>
+<tr><td><code>Refraction</code></td><td><code>refraction</code></td><td>Same value, as a fraction.</td></tr>
+<tr><td><code>Depth</code></td><td><code>depth</code></td><td>Same pixels, up to 96.</td></tr>
+<tr><td><code>Dispersion</code></td><td><code>dispersion</code></td><td>Same value, as a fraction.</td></tr>
+<tr><td><code>Frost</code></td><td><code>frost</code></td><td>Figma counts pixels, the package 0 to 1. Start with pixels divided by 16.</td></tr>
+<tr><td><code>Splay</code></td><td><code>splay</code></td><td>Scale it to 0 to 1 and tune by eye.</td></tr>
+<tr><td><code>Fill</code></td><td><code>tint</code></td><td>The fill colour.</td></tr>
+<tr><td><code>Fill opacity</code></td><td><code>transparency</code></td><td>One minus the opacity. 15% is 0.85.</td></tr>
+<tr><td><code>Corner radius</code></td><td><code>--glass-radius</code></td><td>Same pixels.</td></tr>
+</table>
+<h2>Only in the package</h2>
+<p>Figma has no match for <code>bloom</code>, <code>rim</code>, <code>glint</code>, <code>lift</code> or any motion setting. Leave the defaults and tune them in the playground.</p>
+<h2>With Claude</h2>
+<p>The <a href="https://github.com/EdinstvoAI/edinstvo-glass-plugin">Figma repository</a> has a Claude skill with this table. Connect the Figma MCP server, copy the skill to your skills folder and ask Claude to turn a frame into code.</p>
