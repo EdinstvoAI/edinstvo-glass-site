@@ -1,13 +1,4 @@
-<p>A CSS gradient looks like an image, but glass can't read it yet. It skips the gradient and looks further down the stack. There are two easy ways around it.</p>
-<h2>Draw it on a canvas</h2>
-<p>The canvas API has gradients too, and glass reads a canvas.</p>
-<pre data-code="js">const context = canvas.getContext("2d");
-const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-gradient.addColorStop(0, "#e54d33");
-gradient.addColorStop(1, "#2244cc");
-context.fillStyle = gradient;
-context.fillRect(0, 0, canvas.width, canvas.height);
-
-glass.invalidate();</pre>
-<h2>Use an image</h2>
-<p>Export the gradient as an image and set it with <code>url()</code> or an <code>&lt;img&gt;</code>. It is the simplest way if the gradient never changes.</p>
+<p>Glass reads CSS gradients on its own. Put an element with a gradient behind it, and there is nothing else to do.</p>
+<pre data-code="css">.scene { background: linear-gradient(90deg, #e54d33, #2244cc); }</pre>
+<h2>What to know</h2>
+<p>Glass takes a picture of the gradient and updates it when the element changes. For a gradient that animates, draw it on a canvas and call <code>invalidate()</code>. Safari can refuse to read this picture, and then a canvas or an image is the way to go.</p>

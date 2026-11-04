@@ -1,8 +1,16 @@
-<p>Text and other HTML behind glass don't bend by default. Here is why, and how to get it anyway.</p>
-<h2>Why</h2>
-<p>A page can't read its own pixels, so glass can only use sources it can load itself. A paragraph isn't one of them. See <a href="../how/">How glass works</a>.</p>
-<h2>Draw the text on a canvas</h2>
-<p>A canvas is something glass can read. Draw your text there and put glass over it.</p>
+<p>Glass can bend text and any other HTML behind it. Point it at the element, and it takes a picture of that element and keeps it up to date.</p>
+<h2>How to use it</h2>
+<pre data-code="html"><div id="page">
+  <h1>Text behind the glass</h1>
+</div>
+
+<edinstvo-glass source="#page"></edinstvo-glass></pre>
+<h2>How it works</h2>
+<p>A page can't read its own pixels, see <a href="../how/">How glass works</a>. So glass copies the element with its styles and fonts into an SVG, draws that to a canvas and uses it as the backdrop. When the element changes, it takes a new picture.</p>
+<h2>What to know</h2>
+<p>A picture takes time, so use this for content that changes now and then, not for every frame. Fonts and images from other domains need <a href="../cross-origin/">CORS</a>. Safari can refuse to read this kind of picture, and then the element falls back to CSS. If you need it there, draw on a canvas instead.</p>
+<h2>Draw on a canvas</h2>
+<p>A canvas is the fastest and most reliable source. It suits text that moves or animates.</p>
 <pre data-code="js">await document.fonts.load("700 120px Inter");
 
 const context = canvas.getContext("2d");
@@ -11,7 +19,3 @@ context.fillStyle = "#e54d33";
 context.fillText("glass", 40, 160);
 
 glass.invalidate();</pre>
-<h2>Three details</h2>
-<p>Wait for the font, or the canvas draws a fallback. Multiply the canvas size by <code>devicePixelRatio</code>, or the text looks soft on sharp screens. Call <code>invalidate()</code> after drawing, so glass knows the picture changed.</p>
-<h2>Keep it accessible</h2>
-<p>Text on a canvas isn't real text. Keep a real heading on the page for screen readers and search.</p>
