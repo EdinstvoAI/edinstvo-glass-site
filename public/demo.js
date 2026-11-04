@@ -2,12 +2,19 @@ const base = document.body.dataset.base;
 const { defaults, motionDefaults, motionRanges, ranges, setSceneLight } = await import(`${base}/glass/index.js`);
 await import(`${base}/glass/define.js`);
 
+let photo = null;
+
 function paint(canvas) {
   const { width, height } = canvas.parentElement.getBoundingClientRect();
   canvas.width = width * 2;
   canvas.height = height * 2;
   const c = canvas.getContext("2d");
   c.scale(2, 2);
+  if (photo) {
+    const scale = Math.max(width / photo.width, height / photo.height);
+    c.drawImage(photo, (width - photo.width * scale) / 2, (height - photo.height * scale) / 2, photo.width * scale, photo.height * scale);
+    return;
+  }
   const sky = c.createLinearGradient(0, 0, width, height);
   sky.addColorStop(0, "#e54d33");
   sky.addColorStop(0.55, "#f2b134");
@@ -51,6 +58,23 @@ for (const stage of document.querySelectorAll("[data-stage]")) {
     for (const glass of stage.querySelectorAll("edinstvo-glass, edinstvo-glass-group")) glass.invalidate();
   }).observe(stage);
   stage.querySelectorAll("[data-drag]").forEach(drag);
+  const upload = document.createElement("label");
+  upload.className = "upload";
+  upload.textContent = location.pathname.includes("/ru/") ? "Своё изображение" : "Your image";
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.hidden = true;
+  input.addEventListener("change", async () => {
+    if (!input.files[0]) return;
+    photo = await createImageBitmap(input.files[0]);
+    for (const other of document.querySelectorAll("[data-stage]")) {
+      paint(other.querySelector(":scope > canvas"));
+      for (const glass of other.querySelectorAll("edinstvo-glass, edinstvo-glass-group")) glass.invalidate();
+    }
+  });
+  upload.append(input);
+  stage.append(upload);
 }
 
 for (const toggle of document.querySelectorAll("[data-toggle]")) {
