@@ -1,4 +1,6 @@
 <p>Design with the Glass effect built into Figma, then ship with this package. Most settings share a name, so the handoff is a short list of values.</p>
+<h2>How to use it</h2>
+<p>Select a layer, add the Glass effect in the Effects panel and lower the fill opacity. Every layer keeps its own values.</p>
 <h2>Settings</h2>
 <p>These are starting values. The two renderers differ, so check the result on the real backdrop and adjust by eye.</p>
 <table>
@@ -18,3 +20,7 @@
 <p>Figma has no match for <code>bloom</code>, <code>rim</code>, <code>glint</code>, <code>lift</code> or any motion setting. Leave the defaults and tune them in the playground.</p>
 <h2>With Claude</h2>
 <p>The <a href="https://github.com/EdinstvoAI/edinstvo-glass-plugin">Figma repository</a> has a Claude skill with this table. Connect the Figma MCP server, copy the skill to your skills folder and ask Claude to turn a frame into code.</p>
+<pre data-code="bash">cp -r skills/edinstvo-glass-figma ~/.claude/skills/</pre>
+<h2>Shader</h2>
+<p>For a live lens with the look of the package there is a shader effect. Add it to a frame and it sees everything inside that frame. Move the lens with the handle on the canvas.</p>
+<p>The shader sees the frame as one flat picture, so it can't tell objects apart. One effect is one lens. For a second lens, wrap the frame in another frame. The shader isn't in the Community yet, its source is in the same repository.</p>
