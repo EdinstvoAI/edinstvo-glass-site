@@ -57,6 +57,28 @@ for (const toggle of document.querySelectorAll("[data-toggle]")) {
   toggle.addEventListener("click", () => toggle.classList.toggle("open"));
 }
 
+for (const stage of document.querySelectorAll("[data-drift]")) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) break;
+  const pieces = [...stage.querySelectorAll("[data-drag]")];
+  let seen = false;
+  let touched = false;
+  stage.addEventListener("pointerdown", () => (touched = true), { once: true });
+  new IntersectionObserver(([entry]) => {
+    seen = entry.isIntersecting;
+    if (seen) requestAnimationFrame(drift);
+  }).observe(stage);
+  function drift(now) {
+    if (!seen || touched) return;
+    const t = now / 1000;
+    pieces.forEach((piece, i) => {
+      const x = Math.sin(t * (0.5 + i * 0.17) + i * 2) * (46 + i * 34) + (1 - i) * 26 * (Math.sin(t * 0.4) + 1);
+      const y = Math.cos(t * (0.42 + i * 0.13) + i) * (40 + i * 16);
+      piece.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+    });
+    requestAnimationFrame(drift);
+  }
+}
+
 const playground = document.querySelector("[data-playground]");
 if (playground) {
   const glass = playground.querySelector("edinstvo-glass");

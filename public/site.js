@@ -1,4 +1,5 @@
-const base = document.body.dataset.base;
+const home = document.body.dataset.home;
+const russian = document.documentElement.lang === "ru";
 const root = document.documentElement;
 
 document.querySelector(".theme").addEventListener("click", () => {
@@ -13,8 +14,9 @@ document.addEventListener("click", async (event) => {
   const button = event.target.closest(".copy");
   if (!button) return;
   await navigator.clipboard.writeText(button.nextElementSibling.textContent);
-  button.textContent = "Copied";
-  setTimeout(() => (button.textContent = "Copy"), 1200);
+  const label = button.textContent;
+  button.textContent = russian ? "Скопировано" : "Copied";
+  setTimeout(() => (button.textContent = label), 1200);
 });
 
 const dialog = document.querySelector("dialog.search");
@@ -25,7 +27,7 @@ let index = null;
 async function open() {
   dialog.showModal();
   input.select();
-  index ??= await fetch(`${base}/search.json`).then((response) => response.json());
+  index ??= await fetch(`${home}/search.json`).then((response) => response.json());
 }
 
 function snippet(text, word) {
@@ -69,3 +71,13 @@ addEventListener("keydown", (event) => {
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
 });
+
+const links = new Map([...document.querySelectorAll('.toc a[href^="#"]')].map((link) => [decodeURIComponent(link.hash.slice(1)), link]));
+const spy = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    for (const link of links.values()) link.classList.remove("here");
+    links.get(entry.target.id)?.classList.add("here");
+  }
+}, { rootMargin: "-120px 0px -70% 0px" });
+for (const id of links.keys()) spy.observe(document.getElementById(id));

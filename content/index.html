@@ -1,16 +1,23 @@
 <p>Real glass for the web. One WebGL material that bends light the same way on macOS and on Windows, wrapped in a single tag that works in any framework.</p>
-<div class="stage" data-stage>
-  <edinstvo-glass class="card" data-drag press="0.6" jelly="0.8" glow="0.7"></edinstvo-glass>
+<div class="stage hero" data-stage data-drift>
+  <edinstvo-glass-group frost="0" transparency="0.99" lift="0" refraction="0.6" depth="22" dispersion="0.4" rim="0.5" jelly="0.9" morph="0.7">
+    <edinstvo-glass class="dot big" data-drag merge="40" style="left: 30px"></edinstvo-glass>
+    <edinstvo-glass class="dot" data-drag merge="40" style="left: 180px"></edinstvo-glass>
+    <edinstvo-glass class="dot small" data-drag merge="40" style="left: 300px"></edinstvo-glass>
+  </edinstvo-glass-group>
 </div>
-<p>Drag it. Press it. That is the whole library in one rectangle.</p>
+<div class="start">
+  <a class="primary" href="installation/">Get started</a>
+  <a href="playground/">Open the playground</a>
+  <code>npm i @edinstvo/glass</code>
+</div>
+<div class="cards">
+  <a href="material/"><b>Optics</b><span>Refraction, colour split, true gaussian frost, light that knows its angle.</span></a>
+  <a href="motion/"><b>Motion</b><span>Springs on size and position, jelly under a drag, light from under the finger.</span></a>
+  <a href="merge/"><b>Merge</b><span>Pieces melt into one shape when they get close. You pick which ones.</span></a>
+  <a href="layers/"><b>Layers</b><span>Glass sees the glass under it, and you choose who is on top.</span></a>
+</div>
 <h2>Why not backdrop-filter</h2>
 <p><code>backdrop-filter</code> blurs. It can't bend anything, so the edge of the element stays a flat cut. Glass here is a lens: light goes through a curved rim by Snell's law, colours split where the surface bends, and the middle stays calm.</p>
-<h2>What you get</h2>
-<ul>
-  <li><b>Optics.</b> Refraction, colour split, true gaussian frost, light that knows its angle.</li>
-  <li><b>Motion.</b> Springs on size and position, jelly under a drag, light from under the finger.</li>
-  <li><b>Merge.</b> Pieces melt into one shape when they get close.</li>
-  <li><b>Layers.</b> Glass sees the glass under it.</li>
-</ul>
 <h2>How it stays fast</h2>
 <p>One WebGL context for the whole page. A frame is drawn only when something changes, so a still page costs nothing. Frost is computed once at a small size and reused. There are no dependencies, and the package is about 26 kB.</p>
