@@ -1,0 +1,13 @@
+<p>If a picture comes from another domain, such as a CDN, glass may refuse to read it and fall back to CSS. Nothing is broken: this is how browsers protect people.</p>
+<h2>Why it happens</h2>
+<p>Without this rule, any site could load a private image from another site and read it. So to read pixels from another domain, that domain has to agree. Agreement is a header called CORS.</p>
+<h2>How to tell</h2>
+<p>Glass turns into plain blur, and the console shows a warning that it can't read the backdrop.</p>
+<h2>Fix it on the server</h2>
+<p>Ask the server with the image to send this header. Most CDNs and storage services have a setting for it.</p>
+<pre data-code="http">Access-Control-Allow-Origin: *</pre>
+<h2>Then ask for it in the tag</h2>
+<p>An image in your page needs <code>crossorigin</code> too, or the browser loads it the old way.</p>
+<pre data-code="html"><img src="https://cdn.example.com/photo.jpg" crossorigin="anonymous" alt=""></pre>
+<h2>Or avoid the problem</h2>
+<p>Serve the image from your own domain. Same domain, no CORS.</p>

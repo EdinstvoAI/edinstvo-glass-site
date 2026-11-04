@@ -1,0 +1,23 @@
+<p>Start from an empty page. In five steps you get glass over a picture.</p>
+<h2>1. Add a picture</h2>
+<p>Glass needs something to bend, so put an image on the page first.</p>
+<pre data-code="html"><div class="scene">
+  <img src="photo.jpg" alt="">
+</div></pre>
+<h2>2. Load the package</h2>
+<p>This line teaches the browser a new tag. You need it once per page.</p>
+<pre data-code="html"><script type="module">
+  import "@edinstvo/glass/define";
+</script></pre>
+<h2>3. Put glass on top</h2>
+<pre data-code="html"><div class="scene">
+  <img src="photo.jpg" alt="">
+  <edinstvo-glass class="card">Hello</edinstvo-glass>
+</div></pre>
+<h2>4. Give it a place and a size</h2>
+<p>It is a normal element, so regular CSS works. Without a size it has nothing to draw.</p>
+<pre data-code="css">.scene { position: relative; }
+.card { position: absolute; inset: 40px auto auto 40px; width: 280px; height: 160px; }</pre>
+<h2>5. Change how it looks</h2>
+<p>Every setting is an attribute. Try a few values, or find yours in the playground.</p>
+<pre data-code="html"><edinstvo-glass class="card" refraction="0.5" depth="24" frost="0.3">Hello</edinstvo-glass></pre>

@@ -1,10 +1,13 @@
-<p>Glass sees the glass under it, so stacking works the way it does with real sheets.</p>
-<div class="stage" data-stage>
-  <edinstvo-glass class="card" layer="1" data-drag></edinstvo-glass>
-  <edinstvo-glass class="dot" layer="2" data-drag frost="0" transparency="0.99" lift="0" refraction="0.7" depth="24"></edinstvo-glass>
-</div>
+<p>Glass can sit on glass. This page explains who sees whom.</p>
+<h2>The rule</h2>
+<p>Each glass element is a layer. A layer sees everything below it, including other glass, and nothing above it. So a small button on a glass card bends the card, and the card doesn't know the button exists.</p>
 <h2>Who is on top</h2>
-<p><code>layer</code> picks the order, higher wins. It is <code>z-index</code> with a shorter name, so plain <code>z-index</code> works too. On a tie the later element in the document is on top.</p>
-<pre data-code="html"><edinstvo-glass layer="1"></edinstvo-glass>
-<edinstvo-glass layer="2"></edinstvo-glass></pre>
-<aside class="note"><p>A merged group is one body with one layer. Set <code>layer</code> on the group, not on its children.</p></aside>
+<p>By default the later element in the document is higher. To set the order yourself, use <code>layer</code>. A higher number is on top, and it works like <code>z-index</code>.</p>
+<pre data-code="html"><edinstvo-glass layer="1" class="card"></edinstvo-glass>
+<edinstvo-glass layer="2" class="button"></edinstvo-glass></pre>
+<h2>How it works</h2>
+<p>Before drawing, a layer takes its backdrop and paints the finished glass below it on top. Then it bends that picture. When a lower layer changes, the ones above redraw too.</p>
+<h2>Groups</h2>
+<p>Glass inside a group that merges is one surface, so it is one layer. A child that doesn't merge stays its own surface and can have its own <code>layer</code>.</p>
+<h2>Things to watch</h2>
+<p><code>layer</code> compares numbers across the whole page and doesn't look at nested CSS stacking contexts. If an element looks on top but bends as if it is below, set <code>layer</code> on both.</p>

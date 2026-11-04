@@ -1,0 +1,10 @@
+<p>Text inside glass is regular text, so people can select it and screen readers read it. The only hard part is keeping it readable.</p>
+<h2>Why it gets hard</h2>
+<p>Glass shows what is behind it, and that changes. White text can be fine over a dark photo and vanish when the same card slides over a bright sky.</p>
+<h2>What helps</h2>
+<p>Raise <code>frost</code> so details behind the text melt away. Lower <code>transparency</code> so the tint covers more. Keep <code>refraction</code> low on text panels. Sharp shapes bending under letters read as noise.</p>
+<pre data-code="html"><edinstvo-glass frost="0.9" transparency="0.6" refraction="0.15">
+  Readable on any photo
+</edinstvo-glass></pre>
+<h2>How to check</h2>
+<p>Test the lightest and the darkest place the panel can reach, and aim for a contrast of 4.5 to 1 for body text. Avoid text shadows, they make glass look like a sticker.</p>

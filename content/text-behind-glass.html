@@ -1,0 +1,17 @@
+<p>Text and other HTML behind glass don't bend by default. Here is why, and how to get it anyway.</p>
+<h2>Why</h2>
+<p>A page can't read its own pixels, so glass can only use sources it can load itself. A paragraph isn't one of them. See <a href="../how/">How glass works</a>.</p>
+<h2>Draw the text on a canvas</h2>
+<p>A canvas is something glass can read. Draw your text there and put glass over it.</p>
+<pre data-code="js">await document.fonts.load("700 120px Inter");
+
+const context = canvas.getContext("2d");
+context.font = "700 120px Inter";
+context.fillStyle = "#e54d33";
+context.fillText("glass", 40, 160);
+
+glass.invalidate();</pre>
+<h2>Three details</h2>
+<p>Wait for the font, or the canvas draws a fallback. Multiply the canvas size by <code>devicePixelRatio</code>, or the text looks soft on sharp screens. Call <code>invalidate()</code> after drawing, so glass knows the picture changed.</p>
+<h2>Keep it accessible</h2>
+<p>Text on a canvas isn't real text. Keep a real heading on the page for screen readers and search.</p>

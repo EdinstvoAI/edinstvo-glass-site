@@ -6,16 +6,20 @@ const github = "https://github.com/EdinstvoAI/edinstvo-glass";
 const version = JSON.parse(readFileSync("node_modules/@edinstvo/glass/package.json", "utf8")).version;
 
 const nav = [
-  ["Getting started", [["", "Introduction"], ["installation", "Installation"], ["frameworks", "Frameworks"]]],
-  ["Essentials", [["material", "Material"], ["motion", "Motion"], ["merge", "Merge"], ["layers", "Layers"], ["backdrop", "Backdrop"]]],
+  ["Getting started", [["", "Introduction"], ["installation", "Installation"], ["first", "Your first glass"], ["frameworks", "Frameworks"]]],
+  ["Concepts", [["how", "How glass works"], ["web-components", "Web components"], ["backdrop", "Backdrop"], ["layers", "Layers"]]],
+  ["Settings", [["material", "Material"], ["motion", "Motion"], ["merge", "Merge"]]],
+  ["Guides", [["text-on-glass", "Text on glass"], ["text-behind-glass", "Text behind glass"], ["gradients", "CSS gradients"], ["cross-origin", "Images from other domains"], ["figma", "Figma"]]],
   ["Try it", [["playground", "Playground"], ["examples", "Examples"]]],
-  ["Reference", [["reference", "API"], ["limits", "Limits"], ["troubleshooting", "Troubleshooting"], ["figma", "Figma"]]],
+  ["Reference", [["reference", "API"], ["problems", "Common problems"]]],
 ];
 
 const ru = JSON.parse(readFileSync("content/ru.json", "utf8"));
 const icons = {
   "Getting started": '<path d="M5 19c2-6 6-10 14-14-4 8-8 12-14 14Zm0 0 3-1M9 11l4 4"/>',
-  Essentials: '<path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4Zm16 0h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6Z"/>',
+  Concepts: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  Guides: '<path d="M6 4h12v16l-6-4-6 4Z"/>',
+  Settings: '<path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4Zm16 0h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6Z"/>',
   "Try it": '<path d="M8 6v12l10-6Z"/>',
   Reference: '<path d="m8 8-4 4 4 4m8-8 4 4-4 4M14 5l-4 14"/>',
 };

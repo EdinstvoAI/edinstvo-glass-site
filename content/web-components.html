@@ -1,0 +1,12 @@
+<p>Glass ships as a web component. If the term is new, this page is all you need to know.</p>
+<h2>What it is</h2>
+<p>Web components are a browser standard for making your own HTML tags. <code>&lt;video&gt;</code> is a tag with a lot of behaviour hidden inside. A web component is the same idea, written by someone else. It isn't a framework, so there is nothing to learn beyond HTML.</p>
+<h2>Custom elements</h2>
+<p>A custom element is a tag with a dash in its name, like <code>&lt;edinstvo-glass&gt;</code>. When you import the package, it tells the browser what that tag does. From then on it behaves like any element: you can style it, nest it, add it from JavaScript or remove it.</p>
+<h2>Attributes</h2>
+<p>Settings are attributes, the same way <code>src</code> works on an image. Change one and the glass updates, smoothly where it makes sense.</p>
+<pre data-code="js">document.querySelector("edinstvo-glass").setAttribute("frost", "0.8");</pre>
+<h2>Shadow DOM</h2>
+<p>The element keeps its inner parts in a shadow DOM, a private part of the page. Its styles can't break yours, and yours can't break it. Your content stays outside, in the normal page, so it remains real text.</p>
+<h2>Why it is good for you</h2>
+<p>It works in every framework, because every framework renders HTML. It doesn't age with your stack: when you move from one framework to another, the tag stays. And a design system can use it once for every product. See <a href="../frameworks/">Frameworks</a>.</p>
