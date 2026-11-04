@@ -14,3 +14,4 @@
 <p>Turn off Moving and glass stops drawing altogether. The counter keeps ticking because the browser does, not because glass works.</p>
 <h2>What adds load</h2>
 <p>Moving pieces, large areas of glass, and sources that change every frame, such as video or <code>live</code>. Pieces that stand still add almost nothing, and glass off screen is skipped.</p>
+<p>Glass that overlaps other glass is the most expensive case, because it has to redraw what lies under it. Up to 8 such pieces do this per frame. The rest look straight through to the backdrop, so a dense crowd stays smooth.</p>
