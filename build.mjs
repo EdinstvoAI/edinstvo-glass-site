@@ -141,6 +141,20 @@ for (lang of ["en", "ru"]) {
   writeFileSync(`${root}/search.json`, JSON.stringify(search));
 }
 writeFileSync("dist/404.html", readFileSync("dist/docs/index.html"));
+lang = "en";
+const asText = (html) => html
+  .replace(/<div class="(stage|lights|readout)[\s\S]*?<\/div>\n/g, "")
+  .replace(/<h2>(.*?)<\/h2>/g, "\n## $1\n")
+  .replace(/<pre data-code="(\w+)">([\s\S]*?)<\/pre>/g, "\n```$1\n$2\n```\n")
+  .replace(/<\/t[dh]>\s*<t[dh]>/g, " | ")
+  .replace(/<\/?(?!edinstvo|my-glass|style|script)[a-z][^>]*>/g, "")
+  .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
+  .replace(/\n{3,}/g, "\n\n").trim();
+const site = "https://glass.makark.ru/docs";
+const url = (slug) => `${site}/${slug ? `${slug}/` : ""}`;
+const summary = "Edinstvo Glass is a WebGL web component that draws a glass surface over a page. Package: @edinstvo/glass.";
+writeFileSync("dist/llms.txt", `# Edinstvo Glass\n\n> ${summary}\n\nFull text: https://glass.makark.ru/llms-full.txt\n\n${nav.map(([group, items]) => `## ${group}\n\n${items.map(([slug, title]) => `- [${title}](${url(slug)})`).join("\n")}`).join("\n\n")}\n`);
+writeFileSync("dist/llms-full.txt", `# Edinstvo Glass\n\n> ${summary}\n\n${pages.map((page) => `# ${page.title}\n\nSource: ${url(page.slug)}\n\n${asText(readFileSync(`content/${page.slug || "index"}.html`, "utf8"))}`).join("\n\n")}\n`);
 for (const [file, target] of [["dist/index.html", "docs/"], ["dist/ru/index.html", "docs/"]]) {
   writeFileSync(file, `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=${target}"><title>Edinstvo Glass</title><a href="${target}">Edinstvo Glass</a>`);
 }
