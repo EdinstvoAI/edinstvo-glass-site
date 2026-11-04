@@ -1,0 +1,22 @@
+<p>One package, no dependencies, no build step required.</p>
+<pre data-code="bash">npm i @edinstvo/glass</pre>
+<h2>Web component</h2>
+<p>Import the definition once. After that the tag works in plain HTML, React, Vue, Svelte or anything else that renders elements.</p>
+<pre data-code="html"><script type="module">
+  import "@edinstvo/glass/define";
+</script>
+
+<edinstvo-glass style="width: 240px; height: 120px">
+  Hello
+</edinstvo-glass></pre>
+<p>Corners come from <code>--glass-radius</code>, size from your layout.</p>
+<h2>Without custom elements</h2>
+<pre data-code="js">import { attachGlass } from "@edinstvo/glass";
+
+const glass = attachGlass(element, { material: { frost: 0.4 } });
+
+glass.set({ material: { refraction: 0.6 } });
+glass.destroy();</pre>
+<h2>Plain CSS</h2>
+<p>No JavaScript or no GPU? The stylesheet gives you <code>.glass</code>, <code>.glass-clear</code> and <code>.glass-frost</code> on top of <code>backdrop-filter</code>. The element falls back to the same look by itself when WebGL is missing.</p>
+<pre data-code="js">import "@edinstvo/glass/glass.css";</pre>

@@ -1,0 +1,29 @@
+<p>There are no types of glass, only settings. The defaults are tuned against the system glass on macOS.</p>
+<p>Set anything three ways. Attributes win over CSS variables.</p>
+<pre data-code="html"><edinstvo-glass frost="0.2" refraction="0.6"></edinstvo-glass>
+
+<style>
+  edinstvo-glass { --glass-depth: 18; }
+</style></pre>
+<pre data-code="js">element.material = { frost: 0.2, tint: "#e54d33" };</pre>
+<div class="stage" data-stage>
+  <edinstvo-glass class="card" frost="0" transparency="0.99" lift="0" refraction="0.6" depth="20" dispersion="0.4" rim="0.5"></edinstvo-glass>
+  <edinstvo-glass class="card"></edinstvo-glass>
+</div>
+<h2>Settings</h2>
+<table>
+  <tr><th>Attribute</th><th>Range</th><th>What it does</th></tr>
+  <tr><td><code>refraction</code></td><td>0 to 1</td><td>How hard the edge bends what is behind it</td></tr>
+  <tr><td><code>depth</code></td><td>0 to 96 px</td><td>Width of the curved edge</td></tr>
+  <tr><td><code>splay</code></td><td>0 to 1</td><td>Spreads the curve from the edge towards the centre</td></tr>
+  <tr><td><code>dispersion</code></td><td>0 to 1</td><td>How far colours split where the glass bends</td></tr>
+  <tr><td><code>frost</code></td><td>0 to 1</td><td>Matte surface, a true gaussian up to 20 px</td></tr>
+  <tr><td><code>transparency</code></td><td>0 to 1</td><td>How much of the backdrop survives the tint</td></tr>
+  <tr><td><code>tint</code></td><td>CSS colour</td><td>Glass colour. <code>auto</code> follows the theme</td></tr>
+  <tr><td><code>lift</code></td><td>0 to 1</td><td>Brightens everything behind the glass</td></tr>
+  <tr><td><code>light</code></td><td>0 to 1</td><td>Shading across the curve</td></tr>
+  <tr><td><code>light-angle</code></td><td>-180 to 180°</td><td>Where the light comes from. 0 is the top</td></tr>
+  <tr><td><code>rim</code></td><td>0 to 1</td><td>Thin light line along the edge</td></tr>
+  <tr><td><code>glint</code></td><td>0 to 1</td><td>Sharp highlight on the edge</td></tr>
+  <tr><td><code>bloom</code></td><td>0 to 1</td><td>Glow inside the glass and around it</td></tr>
+</table>

@@ -1,0 +1,9 @@
+<p>What it can't do yet, so you find out here and not in production.</p>
+<h2>Text behind the glass</h2>
+<p>Text and regular DOM behind the glass aren't refracted, only images, video, canvas, solid colours and other glass. If you need them, draw them to a canvas and pass it as the source.</p>
+<h2>CSS gradients</h2>
+<p>They aren't read yet. Glass skips them and looks further down the stack.</p>
+<h2>Cross-origin images</h2>
+<p>They need CORS headers. Without them that element falls back to CSS.</p>
+<h2>Stacking contexts</h2>
+<p><code>layer</code> compares numbers across the whole page and doesn't look at nested stacking contexts.</p>

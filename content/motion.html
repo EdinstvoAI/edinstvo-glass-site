@@ -1,0 +1,20 @@
+<p>Change size or position in CSS and the glass flows there. You don't animate anything yourself.</p>
+<div class="stage" data-stage>
+  <edinstvo-glass class="dot" data-drag jelly="1" morph="0.8" glow="1"></edinstvo-glass>
+  <edinstvo-glass class="dot" data-drag jelly="0" morph="0" press="0" glow="0"></edinstvo-glass>
+</div>
+<p>The left one has everything turned up, the right one has everything off.</p>
+<h2>Settings</h2>
+<table>
+  <tr><th>Attribute</th><th>Range</th><th>What it does</th></tr>
+  <tr><td><code>morph</code></td><td>0 to 1</td><td>Softness of the flow. 0 jumps straight to the new shape</td></tr>
+  <tr><td><code>jelly</code></td><td>0 to 1</td><td>Stretch while moving and under a drag</td></tr>
+  <tr><td><code>press</code></td><td>0 to 1</td><td>How much the glass swells when held</td></tr>
+  <tr><td><code>glow</code></td><td>0 to 1</td><td>Light that spreads from under the finger</td></tr>
+  <tr><td><code>follow</code></td><td>0 to 1</td><td>How far the light chases the pointer</td></tr>
+</table>
+<p><code>prefers-reduced-motion</code> turns all of it off.</p>
+<h2>Appear</h2>
+<p>Add <code>appear</code> to materialise on load. <code>show()</code> and <code>hide()</code> return a promise, so you can remove the element when it is gone.</p>
+<pre data-code="js">await glass.hide();
+glass.remove();</pre>

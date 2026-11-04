@@ -1,0 +1,9 @@
+<p>WebGL can't read the pixels of a page, so glass has to be told what is behind it.</p>
+<h2>Automatic</h2>
+<p>By default it looks under itself and takes the nearest <code>&lt;img&gt;</code>, <code>&lt;video&gt;</code>, <code>&lt;canvas&gt;</code>, CSS <code>url()</code> background or solid colour.</p>
+<h2>By hand</h2>
+<pre data-code="html"><edinstvo-glass source="#scene"></edinstvo-glass></pre>
+<pre data-code="js">glass.source = canvas;
+glass.invalidate();</pre>
+<h2>Things that change</h2>
+<p>A playing video updates on its own. If you draw on a canvas, call <code>invalidate()</code> after drawing, or add <code>live</code> to redraw every frame.</p>

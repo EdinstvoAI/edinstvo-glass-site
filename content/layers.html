@@ -1,0 +1,10 @@
+<p>Glass sees the glass under it, so stacking works the way it does with real sheets.</p>
+<div class="stage" data-stage>
+  <edinstvo-glass class="card" layer="1" data-drag></edinstvo-glass>
+  <edinstvo-glass class="dot" layer="2" data-drag frost="0" transparency="0.99" lift="0" refraction="0.7" depth="24"></edinstvo-glass>
+</div>
+<h2>Who is on top</h2>
+<p><code>layer</code> picks the order, higher wins. It is <code>z-index</code> with a shorter name, so plain <code>z-index</code> works too. On a tie the later element in the document is on top.</p>
+<pre data-code="html"><edinstvo-glass layer="1"></edinstvo-glass>
+<edinstvo-glass layer="2"></edinstvo-glass></pre>
+<p>A merged group is one body with one layer. Set <code>layer</code> on the group, not on its children.</p>
