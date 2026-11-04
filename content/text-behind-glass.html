@@ -8,7 +8,7 @@
 <h2>How it works</h2>
 <p>A page can't read its own pixels, see <a href="../how/">How glass works</a>. So glass copies the element with its styles and fonts into an SVG, draws that to a canvas and uses it as the backdrop. When the element changes, it takes a new picture.</p>
 <h2>What to know</h2>
-<p>A picture takes time, so use this for content that changes now and then, not for every frame. Fonts and images from other domains need <a href="../cross-origin/">CORS</a>. This works in Chrome and Safari 27. If a browser refuses the picture, the element falls back to CSS.</p>
+<p>A picture takes time, so use this for content that changes now and then, not for every frame. Fonts and images from other domains need <a href="../cross-origin/">CORS</a>. This works in Chrome, Safari 27 and Firefox. If a browser refuses the picture, the element falls back to CSS.</p>
 <h2>Draw on a canvas</h2>
 <p>A canvas is the fastest and most reliable source. It suits text that moves or animates.</p>
 <pre data-code="js">await document.fonts.load("700 120px Inter");
