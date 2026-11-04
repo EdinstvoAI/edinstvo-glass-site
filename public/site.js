@@ -2,10 +2,18 @@ const home = document.body.dataset.home;
 const russian = document.documentElement.lang === "ru";
 const root = document.documentElement;
 
+const isDark = () => (root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches);
+root.dataset.mode = isDark() ? "dark" : "light";
+
 document.querySelector(".theme").addEventListener("click", () => {
-  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  root.dataset.theme = dark ? "light" : "dark";
-  try { localStorage.setItem("theme", root.dataset.theme); } catch {}
+  const next = isDark() ? "light" : "dark";
+  root.dataset.mode = next;
+  const apply = () => {
+    root.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch {}
+  };
+  if (document.startViewTransition) document.startViewTransition(apply);
+  else apply();
 });
 
 document.querySelector(".menu").addEventListener("click", () => document.querySelector(".sidebar").classList.toggle("open"));

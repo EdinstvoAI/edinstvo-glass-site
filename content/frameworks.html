@@ -1,0 +1,19 @@
+<p>It is a regular HTML tag, so every framework can render it. Import the definition once at the entry of your app.</p>
+<h2>React</h2>
+<p>React 19 passes attributes and properties to custom elements as they are.</p>
+<pre data-code="jsx">import "@edinstvo/glass/define";
+
+export function Card() {
+  return <edinstvo-glass frost="0.4" jelly="0.8">Hello</edinstvo-glass>;
+}</pre>
+<h2>Vue</h2>
+<p>Tell the compiler that the tag isn't a Vue component.</p>
+<pre data-code="js">vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith("edinstvo-") } } })</pre>
+<h2>Svelte</h2>
+<p>Nothing to set up, use the tag as it is.</p>
+<h2>Server rendering</h2>
+<p>Importing the package on the server is safe, but the definition needs a browser. Load <code>@edinstvo/glass/define</code> on the client. Until then the tag is an empty box with your CSS.</p>
+<h2>TypeScript</h2>
+<p>Types ship with the package: <code>Material</code>, <code>Motion</code>, <code>GlassOptions</code> and <code>GlassSource</code>.</p>
+<h2>Browsers</h2>
+<p>Anything with WebGL 2: current Chrome, Edge, Firefox and Safari, and the webviews inside Tauri and Electron. Without it the element falls back to <code>backdrop-filter</code>.</p>
