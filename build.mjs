@@ -6,10 +6,10 @@ const github = "https://github.com/EdinstvoAI/edinstvo-glass";
 const version = JSON.parse(readFileSync("node_modules/@edinstvo/glass/package.json", "utf8")).version;
 
 const nav = [
-  ["Getting started", [["", "Introduction"], ["installation", "Installation"]]],
+  ["Getting started", [["", "Introduction"], ["installation", "Installation"], ["frameworks", "Frameworks"]]],
   ["Essentials", [["material", "Material"], ["motion", "Motion"], ["merge", "Merge"], ["layers", "Layers"], ["backdrop", "Backdrop"]]],
   ["Try it", [["playground", "Playground"], ["examples", "Examples"]]],
-  ["Reference", [["reference", "API"], ["limits", "Limits"]]],
+  ["Reference", [["reference", "API"], ["limits", "Limits"], ["troubleshooting", "Troubleshooting"]]],
 ];
 
 const ru = JSON.parse(readFileSync("content/ru.json", "utf8"));
@@ -23,7 +23,7 @@ const icon = (group) => `<svg viewBox="0 0 24 24" width="16" height="16" fill="n
 const pages = nav.flatMap(([group, items]) => items.map(([slug, title]) => ({ group, slug, title })));
 let lang = "en";
 const t = (text) => (lang === "ru" ? ru.ui[text] ?? text : text);
-const home = (language) => `${base}${language === "ru" ? "/ru" : ""}`;
+const home = (language) => `${base}${language === "ru" ? "/ru" : ""}/docs`;
 const href = (slug, language = lang) => `${home(language)}/${slug ? `${slug}/` : ""}`;
 
 function translate(slug, raw) {
@@ -57,7 +57,7 @@ function render(page, index) {
   const [, items] = nav.find(([group]) => group === page.group);
   const sidebar = `<ul>${items.map(([slug, title]) => `<li><a href="${href(slug)}"${slug === page.slug ? ' aria-current="page"' : ""}>${t(title)}</a></li>`).join("")}</ul>`;
   const tabs = nav.map(([group, [[slug]]]) => `<a href="${href(slug)}"${group === page.group ? ' aria-current="true"' : ""}>${icon(group)}${t(group)}</a>`).join("");
-  const links = [[github, "GitHub"], ["https://www.npmjs.com/package/@edinstvo/glass", "npm"], [`${github}-documentation-/edit/main/content/${lang === "ru" ? "ru.json" : `${page.slug || "index"}.html`}`, t("Edit this page")]];
+  const links = [[github, "GitHub"], ["https://www.npmjs.com/package/@edinstvo/glass", "npm"]];
   const prev = pages[index - 1];
   const next = pages[index + 1];
   const live = /data-stage|data-playground/.test(raw);
@@ -78,13 +78,18 @@ ${live ? `<script type="module" src="${base}/demo.js"></script>` : ""}
 <header>
   <a class="logo" href="${href("")}"><img src="${base}/logo.png" alt="Edinstvo Glass" width="74" height="36"></a>
   <span class="version">${version}</span>
-  <button class="search-open" type="button"><span>${t("Search")}</span><kbd>⌘K</kbd></button>
-  <nav>
-    <button class="menu" type="button" aria-label="${t("Menu")}">${t("Menu")}</button>
-    <button class="theme" type="button" aria-label="Switch theme"></button>
-    <a href="${href(page.slug, lang === "ru" ? "en" : "ru")}">${lang === "ru" ? "EN" : "RU"}</a>
-    <a href="${github}">GitHub</a>
+  <nav class="main">
+    <a href="${href("")}">${t("Docs")}</a>
+    <a href="${href("playground")}">${t("Playground")}</a>
+    <span>Figma <small>${t("Soon")}</small></span>
   </nav>
+  <div class="tools">
+    <button class="tool search-open" type="button" aria-label="${t("Search")}"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
+    <a class="tool lang" href="${href(page.slug, lang === "ru" ? "en" : "ru")}">${lang === "ru" ? "EN" : "RU"}</a>
+    <button class="tool theme" type="button" aria-label="Theme"><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6 7 7m10 10 1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg></button>
+    <a class="tool" href="${github}" aria-label="GitHub"><svg viewBox="0 0 24 24" class="solid"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.700c-2.800.6-3.400-1.300-3.400-1.300-.4-1.200-1.100-1.500-1.100-1.500-.9-.6.1-.6.1-.6 1 .1 1.500 1 1.500 1 .9 1.500 2.300 1.100 2.900.8.1-.6.3-1.100.6-1.300-2.200-.3-4.500-1.100-4.500-5a3.900 3.900 0 0 1 1-2.700c-.1-.3-.4-1.300.1-2.600 0 0 .8-.3 2.700 1a9.400 9.400 0 0 1 5 0c1.900-1.300 2.700-1 2.700-1 .5 1.300.2 2.300.1 2.600a3.900 3.900 0 0 1 1 2.700c0 3.900-2.300 4.700-4.500 5 .4.300.7.900.7 1.900V21c0 .3.200.6.700.5A10 10 0 0 0 12 2Z"/></svg></a>
+    <button class="tool menu" type="button" aria-label="${t("Menu")}"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></svg></button>
+  </div>
 </header>
 <div class="tabs"><div>${tabs}</div></div>
 <div class="layout">
@@ -100,6 +105,14 @@ ${live ? `<script type="module" src="${base}/demo.js"></script>` : ""}
   </main>
   <aside class="toc">${toc.length ? `<p>${t("On this page")}</p><ul>${toc.map(([id, text]) => `<li><a href="#${id}">${text}</a></li>`).join("")}</ul><hr>` : ""}<p>${t("Links")}</p><ul>${links.map(([url, text]) => `<li><a href="${url}">${text} ↗</a></li>`).join("")}</ul></aside>
 </div>
+<footer class="site">
+  <div>
+    <img src="${base}/logo.png" alt="Edinstvo Glass" width="74" height="36">
+    <p>${t("Docs")}<a href="${href("installation")}">${t("Installation")}</a><a href="${href("playground")}">${t("Playground")}</a><a href="${href("examples")}">${t("Examples")}</a></p>
+    <p>${t("Project")}<a href="${github}">GitHub</a><a href="https://www.npmjs.com/package/@edinstvo/glass">npm</a><a href="${github}/releases">${t("Releases")}</a><a href="${github}/issues">${t("Issues")}</a></p>
+    <small>MIT · Edinstvo</small>
+  </div>
+</footer>
 <dialog class="search"><input type="search" placeholder="${t("Search the docs")}" aria-label="${t("Search the docs")}"><ul></ul></dialog>
 </body>
 </html>
@@ -112,7 +125,7 @@ cpSync("node_modules/@edinstvo/glass/dist", "dist/glass", { recursive: true, fil
 
 for (lang of ["en", "ru"]) {
   const search = [];
-  const root = lang === "ru" ? "dist/ru" : "dist";
+  const root = lang === "ru" ? "dist/ru/docs" : "dist/docs";
   pages.forEach((page, index) => {
     const file = join(root, page.slug, "index.html");
     mkdirSync(dirname(file), { recursive: true });
@@ -123,4 +136,7 @@ for (lang of ["en", "ru"]) {
   });
   writeFileSync(`${root}/search.json`, JSON.stringify(search));
 }
-writeFileSync("dist/404.html", readFileSync("dist/index.html"));
+writeFileSync("dist/404.html", readFileSync("dist/docs/index.html"));
+for (const [file, target] of [["dist/index.html", "docs/"], ["dist/ru/index.html", "docs/"]]) {
+  writeFileSync(file, `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=${target}"><title>Edinstvo Glass</title><a href="${target}">Edinstvo Glass</a>`);
+}
