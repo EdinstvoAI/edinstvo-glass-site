@@ -1,3 +1,5 @@
+@font-face { font-family: "Martian Grotesk"; src: url("fonts/MartianGrotesk-StdRg.otf") format("opentype"); font-weight: 400 500; font-display: swap; }
+@font-face { font-family: "Martian Grotesk"; src: url("fonts/MartianGrotesk-StdBd.otf") format("opentype"); font-weight: 600 800; font-display: swap; }
 @font-face { font-family: "Martian Mono"; src: url("fonts/MartianMono.ttf") format("truetype"); font-weight: 100 800; font-stretch: 75% 112.5%; font-display: swap; }
 :root {
   --bg: #fff;
