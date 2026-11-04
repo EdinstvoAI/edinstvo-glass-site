@@ -8,7 +8,7 @@ setSceneLight({ direction: "top-left", intensity: "80%", color: "white", softnes
   <label><span>Color</span><input type="color" name="color" value="#ffffff"></label>
   <label><span>Softness</span><input type="range" name="softness" min="0" max="1" step="0.01" value="0.3"></label>
   <label><span>Diffusion</span><input type="range" name="diffusion" min="0" max="1" step="0.01" value="0.1"></label>
-  <label><input type="checkbox" name="dynamic-refraction"><span>Dynamic refraction</span></label>
+  <label><input type="checkbox" name="dynamic-refraction"><span>Dynamic refraction (beta)</span></label>
   <label><input type="checkbox" name="reflection"><span>Reflections</span></label>
 </div>
 <p>These controls drive the real engine, and every example below follows them.</p>
@@ -41,8 +41,8 @@ setSceneLight({ direction: "top-left", intensity: "80%", color: "white", softnes
   <tr><td>a value</td><td>Overrides this setting only</td></tr>
   <tr><td><code>default</code></td><td>Goes back to the engine value, past the scene</td></tr>
 </table>
-<h2>Dynamic refraction</h2>
-<p>Glass bends harder where the content behind it changes, and the shape sets how far. Off by default, and when off it costs nothing. Drag the glass over the word.</p>
+<h2>Dynamic refraction (beta)</h2>
+<p>This effect is in beta and may change. Glass bends harder where the content behind it changes, and the shape sets how far. Off by default, and when off it costs nothing. Drag the glass over the word.</p>
 <div class="stage" data-stage>
   <edinstvo-glass class="card" data-drag frost="0" transparency="0.99" lift="0" rim="0.5" refraction="0.3" dynamic-refraction="0.8"></edinstvo-glass>
 </div>
@@ -66,4 +66,4 @@ setSceneLight({ direction: "top-left", intensity: "80%", color: "white", softnes
   <tr><td><code>light-softness</code></td><td><code>softness</code></td><td>Wraps light around the curve, 0 to 1</td></tr>
   <tr><td><code>light-diffusion</code></td><td><code>diffusion</code></td><td>Spreads it across the surface, 0 to 1</td></tr>
 </table>
-<p><code>dynamic-refraction</code> and <code>reflection</code> take 0 to 1 per element; 0 turns them off. All of this also works as CSS variables, like <code>--glass-light-color</code>.</p>
+<p><code>dynamic-refraction</code> (beta) and <code>reflection</code> take 0 to 1 per element; 0 turns them off. All of this also works as CSS variables, like <code>--glass-light-color</code>.</p>
