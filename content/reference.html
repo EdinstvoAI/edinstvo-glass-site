@@ -1,35 +1,95 @@
-<p>Everything the package exports.</p>
+<p>Everything the package gives you, with an example for each part. You don't need to know web components to read this.</p>
+<h2>Three words first</h2>
+<p>An <i>attribute</i> is written in HTML, inside the tag. A <i>property</i> is the same kind of setting, set from JavaScript on the element. A <i>method</i> is a function you call on the element to make it do something.</p>
+<pre data-code="html">&lt;!-- attribute --&gt;
+&lt;edinstvo-glass frost="0.3"&gt;&lt;/edinstvo-glass&gt;
+
+&lt;script type="module"&gt;
+  const glass = document.querySelector("edinstvo-glass");
+  glass.material = { frost: 0.3 }; // property
+  glass.invalidate();              // method
+&lt;/script&gt;</pre>
 <h2>Tags</h2>
+<p>Importing <code>@edinstvo/glass/define</code> once makes both tags work on the page.</p>
 <table>
   <tr><th>Tag</th><th>What it is</th></tr>
-  <tr><td><code>edinstvo-glass</code></td><td>One piece of glass</td></tr>
-  <tr><td><code>edinstvo-glass-group</code></td><td>Shares settings and lets children merge</td></tr>
+  <tr><td><code>edinstvo-glass</code></td><td>One piece of glass. Anything you put inside it is shown on top of the glass</td></tr>
+  <tr><td><code>edinstvo-glass-group</code></td><td>A wrapper. Settings on it reach every piece inside, and pieces inside can merge</td></tr>
 </table>
-<h2>Element API</h2>
-<table>
-  <tr><th>Member</th><th>What it does</th></tr>
-  <tr><td><code>material</code></td><td>Object with any material settings</td></tr>
-  <tr><td><code>source</code></td><td>One of <code>"auto"</code>, a selector, an image, video or canvas</td></tr>
-  <tr><td><code>invalidate()</code></td><td>Redraw on the next frame</td></tr>
-  <tr><td><code>show()</code>, <code>hide()</code></td><td>Appear and vanish, both return a promise</td></tr>
-</table>
-<h2>Other attributes</h2>
+<pre data-code="html">&lt;edinstvo-glass-group frost="0.2"&gt;
+  &lt;edinstvo-glass&gt;Takes frost from the group&lt;/edinstvo-glass&gt;
+  &lt;edinstvo-glass frost="0.8"&gt;Uses its own&lt;/edinstvo-glass&gt;
+&lt;/edinstvo-glass-group&gt;</pre>
+<h2>Attributes</h2>
+<p>Look settings are listed in <a href="../material/">Material</a>, <a href="../lighting/">Lighting</a> and <a href="../motion/">Motion</a>. These are the rest.</p>
 <table>
   <tr><th>Attribute</th><th>What it does</th></tr>
-  <tr><td><code>source</code></td><td>CSS selector of the backdrop</td></tr>
-  <tr><td><code>live</code></td><td>Redraw every frame</td></tr>
-  <tr><td><code>appear</code></td><td>Materialise on load</td></tr>
-  <tr><td><code>layer</code></td><td>Stacking order</td></tr>
+  <tr><td><code>source</code></td><td>What the glass shows behind it: a CSS selector such as <code>#photo</code>. Leave it out and glass looks for it by itself</td></tr>
+  <tr><td><code>live</code></td><td>Redraw on every frame. Needed for a canvas that changes all the time. It costs more, so use it only there</td></tr>
+  <tr><td><code>appear</code></td><td>Fade the glass in when it reaches the page</td></tr>
+  <tr><td><code>layer</code></td><td>A number. Higher glass sits on top and sees the glass below it</td></tr>
 </table>
+<h2>Properties</h2>
+<table>
+  <tr><th>Property</th><th>What it takes</th></tr>
+  <tr><td><code>material</code></td><td>An object of settings. Attributes win over it</td></tr>
+  <tr><td><code>source</code></td><td>Same as the attribute, and also an image, video or canvas element</td></tr>
+</table>
+<pre data-code="js">const glass = document.querySelector("edinstvo-glass");
+
+glass.material = { frost: 0.2, tint: "#e54d33" };
+glass.source = document.querySelector("video");</pre>
+<h2>Methods</h2>
+<table>
+  <tr><th>Method</th><th>What it does</th></tr>
+  <tr><td><code>invalidate()</code></td><td>Redraws the glass once. Call it after you draw on a canvas behind it</td></tr>
+  <tr><td><code>show()</code></td><td>Makes the glass appear. Returns a promise that ends with the animation</td></tr>
+  <tr><td><code>hide()</code></td><td>Makes it vanish, the same way</td></tr>
+</table>
+<pre data-code="js">await glass.hide();
+glass.remove();</pre>
 <h2>CSS variables</h2>
-<p><code>--glass-radius</code>, <code>--glass-shadow</code>, <code>--glass-tint</code>, <code>--glass-fallback</code>, plus <code>--glass-</code> and the name of any numeric setting.</p>
-<h2>JavaScript</h2>
-<pre data-code="js">import {
-  attachGlass,
-  defineGlass,
-  defaults,
-  ranges,
-  motionDefaults,
-  motionRanges,
-} from "@edinstvo/glass";</pre>
-<p><code>defineGlass("my-glass")</code> registers the tags under your own name.</p>
+<p>Any setting can come from CSS, which is handy for themes. Add <code>--glass-</code> before its name. The value is passed down to everything inside, like any CSS variable.</p>
+<pre data-code="css">:root {
+  --glass-frost: 0.4;
+  --glass-light-color: #fff3e0;
+  --glass-radius: 20px;
+}</pre>
+<table>
+  <tr><th>Variable</th><th>What it does</th></tr>
+  <tr><td><code>--glass-radius</code></td><td>Corner radius</td></tr>
+  <tr><td><code>--glass-shadow</code></td><td>Shadow under the glass</td></tr>
+  <tr><td><code>--glass-fallback</code></td><td>Fill used when WebGL isn't available</td></tr>
+</table>
+<h2>Functions</h2>
+<p>Import these from <code>@edinstvo/glass</code> when you need them.</p>
+<table>
+  <tr><th>Function</th><th>What it does</th></tr>
+  <tr><td><code>setSceneLight(light)</code></td><td>Sets the light for the whole page. Only the settings you pass change. <code>null</code> clears it</td></tr>
+  <tr><td><code>attachGlass(element, options)</code></td><td>Turns any element into glass without a custom tag</td></tr>
+  <tr><td><code>defineGlass(name)</code></td><td>Registers the tags under your own name</td></tr>
+  <tr><td><code>resolveMaterial(...layers)</code></td><td>Returns the final settings after stacking layers</td></tr>
+  <tr><td><code>resolveMotion(...layers)</code></td><td>The same for motion</td></tr>
+</table>
+<pre data-code="js">import { attachGlass, defineGlass, setSceneLight } from "@edinstvo/glass";
+
+setSceneLight({ direction: "top-left", intensity: "80%" });
+
+defineGlass("my-glass"); // &lt;my-glass&gt; and &lt;my-glass-group&gt;
+
+const glass = attachGlass(document.querySelector(".panel"), {
+  material: { frost: 0.3 },
+  source: "#photo",
+});
+
+glass.set({ material: { frost: 0.6 } });
+glass.destroy();</pre>
+<p><code>attachGlass</code> takes <code>material</code>, <code>motion</code>, <code>source</code>, <code>live</code> and <code>appear</code>. It returns an object with <code>set</code>, <code>invalidate</code>, <code>show</code>, <code>hide</code> and <code>destroy</code>. Call <code>destroy</code> when the element goes away.</p>
+<h2>Reference values</h2>
+<table>
+  <tr><th>Export</th><th>What it holds</th></tr>
+  <tr><td><code>defaults</code></td><td>Default value of every material setting</td></tr>
+  <tr><td><code>ranges</code></td><td>Lowest and highest value of each one</td></tr>
+  <tr><td><code>motionDefaults</code></td><td>Defaults for motion</td></tr>
+  <tr><td><code>motionRanges</code></td><td>Ranges for motion</td></tr>
+</table>

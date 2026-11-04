@@ -1,0 +1,16 @@
+<p>See what glass costs on your own device. Choose how many pieces to draw and whether they move. The numbers are measured in this browser, right now.</p>
+<div class="lights" data-load-controls>
+  <label><span>Pieces</span><input type="range" name="count" min="1" max="64" value="12"></label>
+  <label><input type="checkbox" name="moving" checked><span>Moving</span></label>
+</div>
+<div class="readout">
+  <div><b>Frames per second</b><output data-fps>–</output></div>
+  <div><b>Average frame</b><output data-average>–</output></div>
+  <div><b>Slowest frame</b><output data-worst>–</output></div>
+</div>
+<div class="stage load" data-stage data-load></div>
+<h2>How to read it</h2>
+<p>Your screen sets the ceiling, usually 60 or 120 frames per second. A frame under 16 ms is enough for 60. If the numbers hold with the pieces you plan to use, you are fine.</p>
+<p>Turn off Moving and glass stops drawing altogether. The counter keeps ticking because the browser does, not because glass works.</p>
+<h2>What adds load</h2>
+<p>Moving pieces, large areas of glass, and sources that change every frame, such as video or <code>live</code>. Pieces that stand still add almost nothing, and glass off screen is skipped.</p>

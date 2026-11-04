@@ -1,9 +1,6 @@
-<p>You don't need this page to use glass, but it explains why the rest of the docs say what they say.</p>
-<h2>Why not plain CSS</h2>
+<h2>What CSS can do</h2>
 <p>CSS can blur what is behind an element with <code>backdrop-filter</code>, and that is all. It can't move pixels, so it can't bend light. To bend light you need a program that runs for every pixel, and in a browser that is a shader on the graphics card. WebGL is the way to run one.</p>
-<h2>The catch</h2>
+<h2>Where glass gets its picture</h2>
 <p>For security reasons a page can't read its own pixels. So glass can't simply look at what is behind it. It has to find the source: an image, a video, a canvas or a solid colour. That is why <a href="../backdrop/">Backdrop</a> matters.</p>
 <h2>What happens in a frame</h2>
 <p>First glass finds its source and uploads it to the graphics card. Then the shader works out the curved edge of your shape and, for each pixel, where the light would come from. It reads that spot, splits the colours, adds frost and the highlight. The result is drawn into a canvas inside your element.</p>
-<h2>Why it stays fast</h2>
-<p>The whole page shares one WebGL context, and a frame is drawn only when something changes. If nothing moves, the graphics card does nothing.</p>

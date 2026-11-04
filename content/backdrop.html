@@ -7,3 +7,6 @@
 glass.invalidate();</pre>
 <h2>Things that change</h2>
 <p>A playing video updates on its own. If you draw on a canvas, call <code>invalidate()</code> after drawing, or add <code>live</code> to redraw every frame.</p>
+<h2>When the backdrop can't be read</h2>
+<p>If glass looks flat, it found only a solid colour. Put an image, video or canvas under it, or pass one with <code>source</code>.</p>
+<p>If it turned into plain blur, that is the CSS fallback. Either WebGL is off, or the image comes from another domain without <a href="../cross-origin/">CORS</a>. The browser console says which.</p>

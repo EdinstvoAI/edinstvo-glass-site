@@ -155,3 +155,47 @@ for (const panel of document.querySelectorAll("[data-lights]")) {
   });
   read();
 }
+
+for (const stage of document.querySelectorAll("[data-load]")) {
+  const controls = document.querySelector("[data-load-controls]");
+  const count = controls.querySelector("[name=count]");
+  const moving = controls.querySelector("[name=moving]");
+  const pieces = [];
+  const fit = () => {
+    while (pieces.length < count.value) {
+      const glass = document.createElement("edinstvo-glass");
+      glass.className = "dot";
+      glass.setAttribute("frost", "0.2");
+      glass.style.cssText = `position:absolute;left:${5 + Math.random() * 75}%;top:${5 + Math.random() * 65}%`;
+      stage.append(glass);
+      pieces.push({ glass, phase: Math.random() * 6.28 });
+    }
+    while (pieces.length > count.value) pieces.pop().glass.remove();
+  };
+  count.addEventListener("input", fit);
+  fit();
+  const show = (name, text) => (document.querySelector(`[data-${name}]`).textContent = text);
+  let last = performance.now();
+  let frames = [];
+  let shown = last;
+  const tick = (now) => {
+    frames.push(now - last);
+    last = now;
+    if (moving.checked) {
+      for (const { glass, phase } of pieces) {
+        glass.style.translate = `${Math.sin(now / 700 + phase) * 40}px ${Math.cos(now / 900 + phase) * 30}px`;
+        glass.invalidate();
+      }
+    }
+    if (now - shown > 500) {
+      const average = frames.reduce((sum, frame) => sum + frame, 0) / frames.length;
+      show("fps", Math.round(1000 / average));
+      show("average", `${average.toFixed(1)} ms`);
+      show("worst", `${Math.max(...frames).toFixed(1)} ms`);
+      frames = [];
+      shown = now;
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}

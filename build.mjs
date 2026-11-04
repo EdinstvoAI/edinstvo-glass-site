@@ -10,8 +10,8 @@ const nav = [
   ["Concepts", [["how", "How glass works"], ["web-components", "Web components"], ["backdrop", "Backdrop"], ["layers", "Layers"]]],
   ["Settings", [["material", "Material"], ["lighting", "Lighting"], ["motion", "Motion"], ["merge", "Merge"]]],
   ["Guides", [["text-on-glass", "Text on glass"], ["text-behind-glass", "Text behind glass"], ["gradients", "CSS gradients"], ["cross-origin", "Images from other domains"], ["figma", "Figma"]]],
-  ["Try it", [["playground", "Playground"], ["examples", "Examples"]]],
-  ["Reference", [["reference", "API"], ["problems", "Common problems"]]],
+  ["Try it", [["playground", "Playground"], ["examples", "Examples"], ["performance", "Load test"]]],
+  ["Reference", [["reference", "API"]]],
 ];
 
 const ru = JSON.parse(readFileSync("content/ru.json", "utf8"));

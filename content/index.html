@@ -1,4 +1,4 @@
-<p>Real glass for the web. One WebGL material that bends light the same way on macOS and on Windows, wrapped in a single tag that works in any framework.</p>
+<p>Edinstvo Glass is a web component that draws a glass surface over your page. It bends, blurs and lights what is behind it, using WebGL.</p>
 <div class="stage hero" data-stage data-drift>
   <edinstvo-glass-group frost="0" transparency="0.99" lift="0" refraction="0.6" depth="22" dispersion="0.4" rim="0.5" jelly="0.9" morph="0.7">
     <edinstvo-glass class="dot big" data-drag merge="40" style="left: 30px"></edinstvo-glass>
@@ -17,7 +17,3 @@
   <a href="merge/"><b>Merge</b><span>Pieces melt into one shape when they get close. You pick which ones.</span></a>
   <a href="layers/"><b>Layers</b><span>Glass sees the glass under it, and you choose who is on top.</span></a>
 </div>
-<h2>Why not backdrop-filter</h2>
-<p><code>backdrop-filter</code> blurs. It can't bend anything, so the edge of the element stays a flat cut. Glass here is a lens: light goes through a curved rim by Snell's law, colours split where the surface bends, and the middle stays calm.</p>
-<h2>How it stays fast</h2>
-<p>One WebGL context for the whole page. A frame is drawn only when something changes, so a still page costs nothing. Frost is computed once at a small size and reused. There are no dependencies, and the package is about 26 kB.</p>
