@@ -1,0 +1,25 @@
+<p>Adapt tint, foreground contrast and frost to the scene beneath a surface.</p>
+<p class="note">Development preview. These APIs are in Dev and are not included in the published 1.1.3 package.</p>
+<h2>Try the modes</h2>
+<div class="example-controls"><label>Mode <select data-adaptation-control><option value="off">Off</option><option value="tint">Tint</option><option value="contrast">Contrast</option><option value="full" selected>Full</option></select></label></div>
+<div class="stage" data-stage data-adaptation-demo><edinstvo-glass class="pill" adaptation="full">Adaptive material</edinstvo-glass></div>
+<p>Upload a photo through the example control. It stays local and is reused by other examples. Analysis uses the supplied backdrop, not arbitrary pixels from the page.</p>
+<h2>Choose what adapts</h2>
+<table><tr><th>Mode</th><th>Behavior</th></tr><tr><td><code>off</code></td><td>Default: no analysis, manual material.</td></tr><tr><td><code>tint</code></td><td>Automatic light or dark tint; application-controlled text.</td></tr><tr><td><code>contrast</code></td><td>Adjust automatic tint, foreground and transparency.</td></tr><tr><td><code>full</code></td><td>Also raise frost on visually complex backgrounds.</td></tr></table>
+<h2>Scene defaults and local overrides</h2>
+<pre data-code="js">import { setSceneMaterial, getSceneMaterial } from "@edinstvo/glass";
+setSceneMaterial({ adaptation: "full", adaptationStrength: 1 });
+console.log(getSceneMaterial());
+setSceneMaterial(null); // Clear scene material defaults.</pre>
+<p>Scene material defaults are combined with scene lighting, CSS tokens and local material layers. Each property inherits independently. A local value wins; <code>inherit</code> keeps its parent and <code>default</code> restores the engine default.</p>
+<pre data-code="html"><edinstvo-glass adaptation="contrast">Automatic text</edinstvo-glass>
+<edinstvo-glass adaptation="off" tint="#fff">Manual material</edinstvo-glass></pre>
+<h2>Manual control</h2>
+<p><code>adaptationStrength</code> ranges from 0 to 1, default 1. Zero skips analysis. Explicit <code>tint</code> and <code>foreground</code> colors are retained. Automatic foreground is black or white; web components apply it to content. With <code>attachGlass</code>, apply <code>color: var(--glass-foreground, inherit)</code> to text.</p>
+<p>Input CSS tokens are <code>--glass-adaptation</code>, <code>--glass-adaptation-strength</code> and <code>--glass-text-color</code>. Adaptation changes effective rendering values, leaving the configured material intact.</p>
+<h2>Smooth changes</h2>
+<p><code>adaptationDuration</code> ranges from 0 to 1000 ms, default 300. Tint, foreground, transparency and frost interpolate between targets, including the return to a manual material. Set <code>adaptation-duration="0"</code> for instant updates. Reduced-motion preferences skip interpolation. Rendering stops once the transition settles.</p>
+<p>Under ordinary accessibility settings, <code>full</code> changes configured transparency and frost by at most 0.18 to preserve the glass appearance. Use <code>contrast</code> when the sampled contrast target matters more than transparency. Increased contrast or reduced-transparency preferences can override the visual limit in <code>full</code>. <code>data-glass-adapting</code> marks a transition; the contrast estimate describes its target, not every intermediate frame.</p>
+<h2>Accessibility and sampling limits</h2>
+<p>A 12×12 local crop is sampled at most once per 150 ms per surface. Contrast modes target 4.5:1 for sampled colors, or 7:1 with increased system contrast. Reduced transparency lowers the transparency limit; forced colors hide the optical canvas and use system colors.</p>
+<p>This estimate precedes final optics and text rendering. It does not guarantee WCAG compliance. Manual colors, partial strength, small details and moving content can prevent the target. <code>data-glass-contrast</code> exposes the estimate. Audit the final interface separately.</p>

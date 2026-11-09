@@ -1,14 +1,15 @@
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 const base = process.env.BASE ?? "";
 const github = "https://github.com/EdinstvoAI/edinstvo-glass";
-const version = JSON.parse(readFileSync("node_modules/@edinstvo/glass/package.json", "utf8")).version;
+const engineSource = process.env.GLASS_SOURCE ?? "node_modules/@edinstvo/glass";
+const version = JSON.parse(readFileSync(join(engineSource, "package.json"), "utf8")).version;
 
 const nav = [
   ["Getting started", [["", "Introduction"], ["installation", "Installation"], ["first", "Your first glass"], ["frameworks", "Frameworks"]]],
   ["Concepts", [["how", "How glass works"], ["web-components", "Web components"], ["backdrop", "Backdrop"], ["layers", "Layers"]]],
-  ["Settings", [["material", "Material"], ["lighting", "Lighting"], ["motion", "Motion"], ["merge", "Merge"]]],
+  ["Settings", [["material", "Material"], ["optics", "Optics"], ["adaptation", "Adaptation"], ["geometry", "Geometry"], ["lighting", "Lighting"], ["motion", "Motion"], ["merge", "Merge"]]],
   ["Guides", [["text-on-glass", "Text on glass"], ["text-behind-glass", "Text behind glass"], ["gradients", "CSS gradients"], ["cross-origin", "Images from other domains"], ["figma", "Figma"]]],
   ["Try it", [["playground", "Playground"], ["examples", "Examples"], ["performance", "Load test"]]],
   ["Reference", [["reference", "API"]]],
@@ -32,6 +33,8 @@ const href = (slug, language = lang) => `${home(language)}/${slug ? `${slug}/` :
 
 function translate(slug, raw) {
   if (lang === "en") return raw;
+  const standalone = `content/ru/${slug || "index"}.html`;
+  if (existsSync(standalone)) return readFileSync(standalone, "utf8");
   const strings = [...ru[slug || "index"]];
   const pattern = /<(p|h2|th|b|span)>(.*?)<\/\1>|<td>(?!<code>)(.*?)<\/td>/g;
   const result = raw.replace(pattern, (match, tag, inner, cell) => {
@@ -52,7 +55,7 @@ function render(page, index) {
   const toc = [];
   const body = raw
     .replace(/<pre data-code="(\w+)">([\s\S]*?)<\/pre>/g, (_, language, code) => `<div class="code"><button class="copy" type="button">${t("Copy")}</button><pre><code data-language="${language}">${escape(code.trim())}</code></pre></div>`)
-    .replace(/href="([a-z]+)\/"/g, (_, slug) => `href="${href(slug)}"`)
+    .replace(/href="([a-z][a-z-]*)\/"/g, (_, slug) => `href="${href(slug)}"`)
     .replace(/<h2>(.*?)<\/h2>/g, (_, text) => {
       const id = anchor(text);
       toc.push([id, plain(text)]);
@@ -125,7 +128,7 @@ ${live ? `<script type="module" src="${base}/demo.js"></script>` : ""}
 
 rmSync("dist", { recursive: true, force: true });
 cpSync("public", "dist", { recursive: true });
-cpSync("node_modules/@edinstvo/glass/dist", "dist/glass", { recursive: true, filter: (file) => !/\.(map|d\.ts)$/.test(file) });
+cpSync(join(engineSource, "dist"), "dist/glass", { recursive: true, filter: (file) => !/\.(map|d\.ts)$/.test(file) });
 
 for (lang of ["en", "ru"]) {
   const search = [];

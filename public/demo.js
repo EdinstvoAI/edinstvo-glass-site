@@ -1,9 +1,11 @@
 const base = document.body.dataset.base;
-const { defaults, motionDefaults, motionRanges, ranges, setSceneLight } = await import(`${base}/glass/index.js`);
+const engine = await import(`${base}/glass/index.js`);
+const { defaults, motionDefaults, motionRanges, ranges, setSceneLight } = engine;
 await import(`${base}/glass/define.js`);
 
 const ru = location.pathname.includes("/ru/");
 let photo = null;
+let photoGeneration = 0;
 
 function repaint() {
   document.documentElement.toggleAttribute("data-photo", Boolean(photo));
@@ -14,10 +16,20 @@ function repaint() {
 }
 
 async function usePhoto(file) {
+  const generation = ++photoGeneration;
+  if (file.size > 20 * 1024 * 1024) throw new Error(ru ? "Выбери изображение до 20 МиБ." : "Choose an image up to 20 MiB.");
+  const header = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const text = (a,b) => String.fromCharCode(...header.subarray(a,b));
+  const raster = header[0] === 255 && header[1] === 216 && header[2] === 255 || header[0] === 137 && text(1,4) === "PNG" || text(0,4) === "GIF8" || text(0,2) === "BM" || text(0,4) === "RIFF" && text(8,12) === "WEBP" || text(4,8) === "ftyp" && ["avif", "avis"].includes(text(8,12));
+  if (!raster) throw new Error(ru ? "Выбери PNG, JPEG, WebP, AVIF, GIF или BMP." : "Choose PNG, JPEG, WebP, AVIF, GIF or BMP.");
   const image = await createImageBitmap(file);
+  if (generation !== photoGeneration) { image.close(); return; }
+  if (image.width * image.height > 64_000_000) { image.close(); throw new Error(ru ? "Слишком большое изображение: максимум 64 Мп." : "Image is too large: maximum 64 megapixels."); }
   const scale = Math.min(1800 / Math.max(image.width, image.height), 1);
   const canvas = Object.assign(document.createElement("canvas"), { width: image.width * scale, height: image.height * scale });
-  canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+  try { canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height); }
+  finally { image.close(); }
+  photo?.close?.();
   photo = canvas;
   try {
     localStorage.setItem("glass-photo", canvas.toDataURL("image/jpeg", 0.85));
@@ -28,7 +40,7 @@ async function usePhoto(file) {
 async function restorePhoto() {
   try {
     const saved = localStorage.getItem("glass-photo");
-    if (saved) photo = await createImageBitmap(await (await fetch(saved)).blob());
+    if (saved && saved.length < 8 * 1024 * 1024 && /^data:image\/(jpeg|png);base64,/.test(saved)) photo = await createImageBitmap(await (await fetch(saved)).blob());
   } catch {}
 }
 
@@ -94,13 +106,18 @@ for (const stage of document.querySelectorAll("[data-stage]")) {
   upload.textContent = ru ? "Своё изображение" : "Your image";
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = "image/*";
+  input.accept = "image/png,image/jpeg,image/webp,image/avif,image/gif,image/bmp";
   input.hidden = true;
-  input.addEventListener("change", () => input.files[0] && usePhoto(input.files[0]));
+  input.addEventListener("change", async () => {
+    if (!input.files[0]) return;
+    try { await usePhoto(input.files[0]); upload.title = ""; upload.textContent = ru ? "Своё изображение" : "Your image"; upload.append(input); input.value = ""; }
+    catch (error) { upload.title = error.message; input.value = ""; upload.textContent = error.message; upload.append(input); }
+  });
   upload.append(input);
   const reset = Object.assign(document.createElement("button"), { type: "button", className: "upload reset", textContent: ru ? "Сбросить" : "Reset" });
   reset.addEventListener("click", () => {
-    photo = null;
+    photoGeneration++;
+    photo?.close?.(); photo = null;
     try {
       localStorage.removeItem("glass-photo");
     } catch {}
@@ -143,6 +160,9 @@ if (playground) {
   const start = { ...defaults, ...motionDefaults };
   const name = (key) => key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
   const changed = {};
+  let selected = stage.querySelector("edinstvo-glass");
+  const fields = new Map();
+  const selectedName = document.createElement("p"); selectedName.className = "selection-caption"; selectedName.setAttribute("aria-live", "polite"); controls.append(selectedName);
   const write = () => {
     const attributes = Object.entries(changed).map(([key, value]) => ` ${name(key)}="${value}"`).join("");
     output.textContent = `<edinstvo-glass${attributes}></edinstvo-glass>`;
@@ -150,23 +170,56 @@ if (playground) {
   for (const [key, [min, max]] of Object.entries({ ...ranges, ...motionRanges })) {
     const label = document.createElement("label");
     const value = document.createElement("output");
-    const input = Object.assign(document.createElement("input"), { type: "range", min, max, step: (max - min) / 100, value: start[key] });
+    const input = Object.assign(document.createElement("input"), { type: "range", min, max, step: max - min > 2 ? 1 : 0.01, value: start[key] });
+    input.setAttribute("aria-label", name(key));
     value.textContent = (+start[key]).toFixed(2);
     label.append(name(key), value, input);
     input.addEventListener("input", () => {
       const number = +(+input.value).toFixed(2);
       value.textContent = number.toFixed(2);
       changed[key] = number;
-      for (const piece of stage.querySelectorAll("edinstvo-glass")) piece.setAttribute(name(key), number);
+      selected.setAttribute(name(key), number);
       write();
     });
     controls.append(label);
+    fields.set(key, { input, value });
   }
-  write();
+  const choices = [];
+  for (const [key, options] of [["adaptation", ["off", "tint", "contrast", "full"]], ["dispersionMode", ["artistic", "physical"]], ["shape", ["rounded-rect", "circle", "ellipse", "superellipse", "path"]]]) {
+    if (key === "adaptation" && !engine.setSceneMaterial || key === "shape" && !engine.geometryDefaults || key === "dispersionMode" && !engine.geometryDefaults) continue;
+    const label = document.createElement("label"), input = document.createElement("select");
+    label.textContent = name(key); input.setAttribute("aria-label", name(key));
+    for (const option of options) input.add(new Option(option, option));
+    label.append(input); controls.prepend(label); choices.push({ key, input, options });
+    input.addEventListener("change", () => {
+      selected.setAttribute(name(key), input.value);
+      if (key === "shape" && input.value === "path") { selected.setAttribute("path", "M50 0L100 100H0Z"); selected.setAttribute("view-box", "0 0 100 100"); }
+      select(selected);
+    });
+  }
+  function select(piece) {
+    selected?.removeAttribute("data-selected"); selected = piece; selected.setAttribute("data-selected", ""); selected.tabIndex = 0;
+    selectedName.textContent = ru ? "Настройки выбранной фигуры" : "Selected shape settings";
+    for (const key of Object.keys(changed)) delete changed[key];
+    for (const [key, { input, value }] of fields) {
+      const raw = selected.getAttribute(name(key));
+      input.value = raw !== null && Number.isFinite(Number(raw)) ? Number(raw) : start[key];
+      value.textContent = Number(input.value).toFixed(2);
+      input.disabled = key === "merge" && !selected.closest("edinstvo-glass-group");
+      if (input.disabled) input.title = ru ? "Слияние требует группы; пример есть в разделе «Слияние»." : "Merging requires a group; see the Merge guide.";
+      if (raw !== null) changed[key] = Number(input.value);
+    }
+    for (const { key, input, options } of choices) { input.value = selected.getAttribute(name(key)) ?? start[key] ?? options[0]; if (selected.hasAttribute(name(key))) changed[key] = input.value; }
+    for (const [key, attribute] of [["path", "path"], ["viewBox", "view-box"]]) if (selected.hasAttribute(attribute)) changed[key] = selected.getAttribute(attribute);
+    write();
+  }
+  for (const event of ["pointerdown", "focusin"]) stage.addEventListener(event, event => { const piece = event.target.closest("edinstvo-glass"); if (piece) select(piece); });
+  select(selected);
   for (const button of document.querySelectorAll("[data-shape]")) {
     button.addEventListener("click", () => {
       if (button.dataset.shape === "clear") {
         stage.querySelectorAll("[data-added-shape]").forEach((piece) => piece.remove());
+        select(stage.querySelector("edinstvo-glass"));
         return;
       }
       const piece = document.createElement("edinstvo-glass");
@@ -175,10 +228,24 @@ if (playground) {
       piece.dataset.addedShape = "";
       piece.style.cssText = `position:absolute;left:${10 + Math.random() * 50}%;top:${10 + Math.random() * 40}%`;
       for (const [key, value] of Object.entries(changed)) piece.setAttribute(name(key), value);
+      if (engine.geometryDefaults) piece.setAttribute("shape", button.dataset.shape.startsWith("dot") ? "circle" : "rounded-rect");
       stage.append(piece);
       drag(piece);
+      select(piece);
     });
   }
+}
+
+for (const [attribute, selector, available] of [["adaptation", "[data-adaptation-control]", Boolean(engine.setSceneMaterial)], ["shape", "[data-geometry-control]", Boolean(engine.geometryDefaults)]]) {
+  const control = document.querySelector(selector);
+  if (!control) continue;
+  const stage = document.querySelector(attribute === "shape" ? "[data-geometry-demo]" : "[data-adaptation-demo]");
+  if (!available) {
+    control.disabled = true;
+    stage.querySelectorAll("edinstvo-glass").forEach(glass => glass.remove());
+    const message = document.createElement("p"); message.className = "preview-message";
+    message.textContent = ru ? "Пример доступен в сборке Dev." : "This example requires the Dev build."; stage.append(message);
+  } else control.addEventListener("change", () => stage.querySelectorAll("edinstvo-glass").forEach(glass => glass.setAttribute(attribute, control.value)));
 }
 
 for (const panel of document.querySelectorAll("[data-lights]")) {

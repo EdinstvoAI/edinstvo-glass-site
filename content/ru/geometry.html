@@ -1,0 +1,21 @@
+<p>Круги, эллипсы, плавные кривые и SVG-контуры используют существующий оптический движок.</p>
+<p class="note">Версия для разработки. Опубликованный пакет 1.1.3 ещё не содержит эти API геометрии.</p>
+<h2>Попробовать контур</h2>
+<div class="example-controls"><label>Форма <select data-geometry-control><option value="rounded-rect">Скруглённый прямоугольник</option><option value="circle">Круг</option><option value="ellipse" selected>Эллипс</option><option value="superellipse">Суперэллипс</option><option value="path">SVG-треугольник</option></select></label></div>
+<div class="stage" data-stage data-geometry-demo><edinstvo-glass shape="ellipse" class="pill" style="width:240px;height:130px;padding:0" path="M50 0L100 100H0Z" frost="0.15"></edinstvo-glass></div>
+<h2>Доступные формы</h2>
+<table><tr><th>Значение</th><th>Геометрия</th></tr><tr><td><code>rounded-rect</code></td><td>По умолчанию; радиус из CSS.</td></tr><tr><td><code>circle</code></td><td>Круг, вписанный в меньшую сторону.</td></tr><tr><td><code>ellipse</code></td><td>Эллипс по ширине и высоте элемента.</td></tr><tr><td><code>superellipse</code></td><td>Плавная кривая; curvature от 2 до 8, по умолчанию 4.</td></tr><tr><td><code>path</code></td><td>SVG-контур, вписанный из view box.</td></tr></table>
+<pre data-code="html"><edinstvo-glass shape="superellipse" curvature="5"></edinstvo-glass>
+<edinstvo-glass shape="path" path="M50 0L100 100H0Z"
+  view-box="0 0 100 100" fill-rule="evenodd"></edinstvo-glass></pre>
+<h2>JavaScript API</h2>
+<pre data-code="js">const surface = attachGlass(element, {
+  geometry: { shape: "path", path: "M50 0L100 100H0Z", viewBox: [0, 0, 100, 100] },
+  material: { depth: 12, refraction: 0.4 },
+});
+surface.set({ geometry: { shape: "ellipse" } });
+glassElement.geometry = { shape: "superellipse", curvature: 6 };</pre>
+<p>Контуры и нормали определяют преломление, дисперсию, свет, обводку и отражения. Работают существующие слияние и слои. У слитой группы один материал, а формы отдельных элементов могут отличаться.</p>
+<h2>SVG и ограничения</h2>
+<p>Принимаются только данные пути: без XML-разметки, скриптов и внешних ресурсов. Пределы: 64 КиБ, 4096 команд, конечные координаты в пределах ±1 000 000. Для контура кэшируется поле расстояний 256×256. Обычное взаимодействие его не пересчитывает.</p>
+<p>Мелкие детали, вогнутые контуры и сильное масштабирование могут давать артефакты. HTML-разметка и попадание мыши остаются прямоугольными; содержимое не обрезается автоматически. У произвольного контура нет автоматической тени. CSS fallback сохраняет обычный скруглённый прямоугольник.</p>

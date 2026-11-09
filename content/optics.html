@@ -1,0 +1,19 @@
+<p>Refraction, reflection and dispersion share a screen-space dielectric model.</p>
+<p class="note">Development preview. New IOR and dispersion settings are not yet published to npm.</p>
+<h2>Index and optical path</h2>
+<p><code>ior</code> is the refractive index: 1–2.4, default 1.5. An index of 1 matches air and causes no geometric refraction. Snell refraction uses a thickness-bounded curved profile. <code>thickness</code> is optical depth in CSS pixels, 0–96, default 6; <code>depth</code> is curve width. The independent <code>strokeThickness</code>, 0–8 px, default 1, controls the rim line.</p>
+<h2>Fresnel reflection</h2>
+<p>When reflection is enabled, the unpolarized dielectric Fresnel equations mix transmitted and reflected colors. Reflection strengthens at grazing surface angles. The environment is the supplied scene image; hidden 3D surroundings are not reconstructed.</p>
+<h2>Two dispersion models</h2>
+<table><tr><th>Mode</th><th>Behavior</th></tr><tr><td><code>artistic</code></td><td>Intentional RGB offsets; default.</td></tr><tr><td><code>physical</code></td><td>Cauchy approximation at 610, 550 and 460 nm, with a generic coefficient scaled by dispersion.</td></tr></table>
+<p><code>dispersion="0"</code> disables channel separation. Physical separation follows surface incidence and optical path, not the decorative directional light angle. It is not calibrated to a glass catalog or a full spectral solution.</p>
+<pre data-code="html"><edinstvo-glass ior="1.5" thickness="12" depth="12"
+  reflection="1" dispersion-mode="physical" dispersion="0.5" frost="0.1">
+  Content
+</edinstvo-glass></pre>
+<h2>Limits and rendering checks</h2>
+<p>This remains a 2D lens under an orthographic view. No repeated internal reflections, polarization or full spectral transport is simulated. Tint, lift, bloom, touch warping and contrast adaptation are appearance controls; the combined material is not a fully energy-conserving spectral model.</p>
+<p>Browser tests read rendered contour, normal and displacement buffers. They check symmetric gap-free curves, continuity at merged bridges, deep capsules and zero geometric refraction at IOR 1, at DPR 1 and 2. They protect specific regressions rather than proving every parameter combination artifact-free.</p>
+<h2>Performance measurements</h2>
+<p>The final local fixture uses 16 surfaces, 40 steps, viewport 1100×850 and DPR 1. Warm-frame texture allocations, uniform lookups and idle draws are zero. Median step duration is 42.6 ms, p95 120.1 ms; a step waits for two animation frames, so these are not FPS figures. The former eight-composite cutoff was removed because it lost lower glass layers. Correct composition costs more work; no overall FPS gain is claimed.</p>
+<p>Blur targets are reused. The source LRU targets 64 MiB and 32 entries, allowing an active source to exceed the budget alone. SVG atlases have a separate 32 MiB target. Full 17-sample Gaussian blur is retained because paired sampling on fractional mip levels produced visible Retina stripes.</p>

@@ -1,0 +1,21 @@
+<p>Circles, ellipses, continuous curves and SVG contours use the existing optical engine.</p>
+<p class="note">Development preview. Published package 1.1.3 does not include these geometry APIs.</p>
+<h2>Try a contour</h2>
+<div class="example-controls"><label>Shape <select data-geometry-control><option value="rounded-rect">Rounded rectangle</option><option value="circle">Circle</option><option value="ellipse" selected>Ellipse</option><option value="superellipse">Superellipse</option><option value="path">SVG triangle</option></select></label></div>
+<div class="stage" data-stage data-geometry-demo><edinstvo-glass shape="ellipse" class="pill" style="width:240px;height:130px;padding:0" path="M50 0L100 100H0Z" frost="0.15"></edinstvo-glass></div>
+<h2>Available shapes</h2>
+<table><tr><th>Value</th><th>Geometry</th></tr><tr><td><code>rounded-rect</code></td><td>Default; follows the CSS corner radius.</td></tr><tr><td><code>circle</code></td><td>Inscribed in the shorter side of the element.</td></tr><tr><td><code>ellipse</code></td><td>Spans the element width and height.</td></tr><tr><td><code>superellipse</code></td><td>Continuous curve; curvature 2–8, default 4.</td></tr><tr><td><code>path</code></td><td>SVG path mapped from a view box.</td></tr></table>
+<pre data-code="html"><edinstvo-glass shape="superellipse" curvature="5"></edinstvo-glass>
+<edinstvo-glass shape="path" path="M50 0L100 100H0Z"
+  view-box="0 0 100 100" fill-rule="evenodd"></edinstvo-glass></pre>
+<h2>JavaScript API</h2>
+<pre data-code="js">const surface = attachGlass(element, {
+  geometry: { shape: "path", path: "M50 0L100 100H0Z", viewBox: [0, 0, 100, 100] },
+  material: { depth: 12, refraction: 0.4 },
+});
+surface.set({ geometry: { shape: "ellipse" } });
+glassElement.geometry = { shape: "superellipse", curvature: 6 };</pre>
+<p>Contours and normals affect refraction, dispersion, light, rim and reflection. Shapes participate in existing merging and layers. A merged group shares a material, while its individual contours can differ.</p>
+<h2>SVG data and limits</h2>
+<p>Only path data is accepted: no SVG markup, scripts or external resources. Limits are 64 KiB, 4096 commands and finite coordinates within ±1,000,000. Each path uses a cached 256×256 distance tile. Normal interaction does not rebuild it.</p>
+<p>Small details, concave contours and extreme scaling may show sampling artifacts. HTML layout and hit testing remain rectangular; content is not automatically clipped. Custom paths have no automatic box shadow. CSS fallback retains an ordinary rounded rectangle.</p>
