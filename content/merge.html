@@ -1,6 +1,6 @@
 <p>Merging is opt-in, per element. Pieces with <code>merge</code> become one shape when they get close. Everything else stays a body of its own.</p>
 <div class="stage" data-stage>
-  <edinstvo-glass-group frost="0" transparency="0.99" lift="0" refraction="0.55" depth="18" rim="0.5">
+  <edinstvo-glass-group transparency="0.99" lift="0" refraction="0.55" depth="18" rim="0.5">
     <edinstvo-glass class="dot" data-drag merge="28" style="left: 20px"></edinstvo-glass>
     <edinstvo-glass class="dot" data-drag merge="28" style="left: 110px"></edinstvo-glass>
     <edinstvo-glass class="dot" data-drag style="left: 210px"></edinstvo-glass>
@@ -14,4 +14,4 @@
 </edinstvo-glass-group></pre>
 <h2>How far it reaches</h2>
 <p>The number is the reach of the melt in pixels, from 0 to 64. <code>merge</code> on the group sets it for every child, and <code>merge="0"</code> on a child opts out.</p>
-<aside class="note"><p>Settings on the group apply to all its children. Only pieces inside the same group can merge, up to 64 of them.</p></aside>
+<aside class="note"><p>Merged pieces use one material, configured on the group. Set frost on the group to control their shared blur. Unmerged children can override their own material. Only pieces inside the same group can merge, up to 64 of them.</p></aside>

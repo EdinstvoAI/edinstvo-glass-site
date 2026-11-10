@@ -41,3 +41,11 @@ test("LLM text includes the new API and the development status", () => {
 test("browser scripts parse without running DOM code", () => {
   for (const script of ["public/demo.js", "public/site.js"]) execFileSync(process.execPath, ["--check", script]);
 });
+
+test("API examples escape HTML exactly once", () => {
+  for (const prefix of ["docs", "ru/docs"]) {
+    const html = readFileSync(`dist/${prefix}/reference/index.html`, "utf8");
+    assert.ok(html.includes('&lt;edinstvo-glass frost="0.3"&gt;'));
+    assert.ok(!html.includes("&amp;lt;edinstvo-glass"));
+  }
+});

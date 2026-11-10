@@ -1,14 +1,14 @@
 <p>Everything the package gives you, with an example for each part. You don't need to know web components to read this.</p>
 <h2>Three words first</h2>
 <p>An <i>attribute</i> is written in HTML, inside the tag. A <i>property</i> is the same kind of setting, set from JavaScript on the element. A <i>method</i> is a function you call on the element to make it do something.</p>
-<pre data-code="html">&lt;!-- attribute --&gt;
-&lt;edinstvo-glass frost="0.3"&gt;&lt;/edinstvo-glass&gt;
+<pre data-code="html"><!-- attribute -->
+<edinstvo-glass frost="0.3"></edinstvo-glass>
 
-&lt;script type="module"&gt;
+<script type="module">
   const glass = document.querySelector("edinstvo-glass");
   glass.material = { frost: 0.3 }; // property
   glass.invalidate();              // method
-&lt;/script&gt;</pre>
+</script></pre>
 <h2>Tags</h2>
 <p>Importing <code>@edinstvo/glass/define</code> once makes both tags work on the page.</p>
 <table>
@@ -16,10 +16,10 @@
   <tr><td><code>edinstvo-glass</code></td><td>One piece of glass. Anything you put inside it is shown on top of the glass</td></tr>
   <tr><td><code>edinstvo-glass-group</code></td><td>A wrapper. Settings on it reach every piece inside, and pieces inside can merge</td></tr>
 </table>
-<pre data-code="html">&lt;edinstvo-glass-group frost="0.2"&gt;
-  &lt;edinstvo-glass&gt;Takes frost from the group&lt;/edinstvo-glass&gt;
-  &lt;edinstvo-glass frost="0.8"&gt;Uses its own&lt;/edinstvo-glass&gt;
-&lt;/edinstvo-glass-group&gt;</pre>
+<pre data-code="html"><edinstvo-glass-group frost="0.2">
+  <edinstvo-glass>Takes frost from the group</edinstvo-glass>
+  <edinstvo-glass frost="0.8">Uses its own</edinstvo-glass>
+</edinstvo-glass-group></pre>
 <h2>Attributes</h2>
 <p>Look settings are listed in <a href="../material/">Material</a>, <a href="../lighting/">Lighting</a> and <a href="../motion/">Motion</a>. These are the rest.</p>
 <table>
@@ -75,7 +75,7 @@ glass.remove();</pre>
 
 setSceneLight({ direction: "top-left", intensity: "80%" });
 
-defineGlass("my-glass"); // &lt;my-glass&gt; and &lt;my-glass-group&gt;
+defineGlass("my-glass"); // <my-glass> and <my-glass-group>
 
 const glass = attachGlass(document.querySelector(".panel"), {
   material: { frost: 0.3 },
