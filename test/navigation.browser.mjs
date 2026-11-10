@@ -119,6 +119,7 @@ try {
   await pause(150);
   check("compact desktop sidebar does not cover the article", await evaluate(`(() => {const side = document.querySelector('.sidebar'), main = document.querySelector('main'); return !side.inert && getComputedStyle(side).visibility === 'visible' && side.getBoundingClientRect().right <= main.getBoundingClientRect().left && document.documentElement.scrollWidth <= innerWidth;})()`));
   await call("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
+  await until(() => evaluate(`innerWidth === 390 && document.querySelector('.sidebar').inert && getComputedStyle(document.querySelector('.menu')).display !== 'none'`));
   await evaluate(`document.querySelector('.menu').click()`);
   check("mobile navigation opens as a modal with focus inside", await evaluate(`document.querySelector('.sidebar').getAttribute('aria-modal') === 'true' && document.querySelector('main').inert && document.activeElement.classList.contains('nav-close')`));
   await route("installation");
