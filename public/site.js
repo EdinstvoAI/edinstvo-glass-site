@@ -21,7 +21,7 @@ document.querySelector(".theme").addEventListener("click", () => {
 
 const sidebar = document.querySelector(".sidebar");
 const menu = document.querySelector(".menu");
-const narrow = matchMedia("(max-width: 820px)");
+const narrow = matchMedia("(max-width: 600px)");
 let menuOpen = false;
 
 function navigationMenu(open, focus = true) {
@@ -47,7 +47,8 @@ function revealCurrent() {
   const active = sidebar.querySelector("a[aria-current]");
   if (!active) return;
   const item = active.getBoundingClientRect(), frame = sidebar.getBoundingClientRect();
-  if (item.top < frame.top + 16 || item.bottom > frame.bottom - 16) sidebar.scrollTop += item.top - frame.top - frame.height / 2;
+  if (item.top < frame.top + 16) sidebar.scrollTop += item.top - frame.top - 16;
+  else if (item.bottom > frame.bottom - 16) sidebar.scrollTop += item.bottom - frame.bottom + 16;
 }
 addEventListener("docs:route", revealCurrent);
 addEventListener("pagehide", () => { try { sessionStorage.setItem("glass-docs-nav-scroll", sidebar.scrollTop); } catch {} });

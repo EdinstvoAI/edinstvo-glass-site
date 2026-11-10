@@ -73,6 +73,7 @@ try {
   await call("Page.navigate", { url: `${base}/ru/docs/optics/` });
   await until(() => evaluate(`document.querySelector('.nav-indicator')?.dataset.engine === 'webgl' && document.querySelector('.tools')?.dataset.engine === 'webgl'`));
   check("complete sidebar uses the real glass engine", await evaluate(`document.querySelectorAll('.nav-group').length === 6 && document.querySelectorAll('.sidebar a').length >= 24 && !document.querySelector('.tabs')`));
+  check("header controls are vertically aligned", await evaluate(`(() => {const header = document.querySelector('header').getBoundingClientRect(); const center = (header.top + header.bottom) / 2; return ['.brand','.search-open','.tools'].every(selector => {const r = document.querySelector(selector).getBoundingClientRect(); return Math.abs((r.top+r.bottom)/2-center) < 1;});})()`));
   await evaluate(`window.__shell = { header: document.querySelector('header'), sidebar: document.querySelector('.sidebar'), canvas: document.querySelector('.nav-indicator canvas') }`);
   await route("installation");
   check("section change preserves header, sidebar and glass canvas", await evaluate(`__shell.header === document.querySelector('header') && __shell.sidebar === document.querySelector('.sidebar') && __shell.canvas === document.querySelector('.nav-indicator canvas')`));
@@ -114,6 +115,9 @@ try {
   check("leaving a benchmark stops its animation loop", true);
   await evaluate("window.requestAnimationFrame = __raf");
 
+  await call("Emulation.setDeviceMetricsOverride", { width: 680, height: 844, deviceScaleFactor: 1, mobile: false });
+  await pause(150);
+  check("compact desktop sidebar does not cover the article", await evaluate(`(() => {const side = document.querySelector('.sidebar'), main = document.querySelector('main'); return !side.inert && getComputedStyle(side).visibility === 'visible' && side.getBoundingClientRect().right <= main.getBoundingClientRect().left && document.documentElement.scrollWidth <= innerWidth;})()`));
   await call("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
   await evaluate(`document.querySelector('.menu').click()`);
   check("mobile navigation opens as a modal with focus inside", await evaluate(`document.querySelector('.sidebar').getAttribute('aria-modal') === 'true' && document.querySelector('main').inert && document.activeElement.classList.contains('nav-close')`));

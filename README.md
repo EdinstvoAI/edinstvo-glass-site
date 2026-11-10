@@ -27,7 +27,9 @@ Run `npm run build` to generate the static `dist` folder. English articles are i
 
 One header contains the logo, local search and display controls. All sections live in a grouped sidebar; the article and live examples occupy the center, with a contents list on the right. Both themes use neutral colors and compact Martian Mono type. Beige surfaces and a separate category strip were rejected.
 
-`public/router.js` fetches same-language articles without reloading the shell. It preserves the sidebar, header, glass context and browser history. Example code loads before the View Transition starts. `public/demo.js` mounts and disposes each article's examples, observers and animation frames. Language switches use ordinary document navigation.
+`public/router.js` fetches same-language articles without reloading the shell. It preserves the sidebar, header, glass context and browser history. Example code loads before the article fades out for 60 ms and its replacement fades in for 150 ms. No article snapshots, translation or height interpolation are involved. Reduced-motion preferences bypass the fade. `public/demo.js` mounts and disposes each article's examples, observers and animation frames. Language switches use ordinary document navigation.
+
+The sidebar remains beside the article at 680 px, including the normal Codex preview width. Only viewports of 600 px or narrower use a modal drawer. Section headings have stronger weight than page links; a subtle tree rule and indentation establish their relationship.
 
 `public/chrome.js` uses the package's real `attachGlass` renderer for the navigation indicator and header controls. Its source is a local neutral canvas, not a capture of article text. It renders on changes and uses CSS selection styling when WebGL is unavailable.
 

@@ -18,6 +18,7 @@ function placeSelection() {
   if (!active) return;
   const rect = active.getBoundingClientRect(), parent = navigation.getBoundingClientRect();
   selection.style.transform = `translateY(${rect.top - parent.top}px)`;
+  selection.style.left = `${rect.left - parent.left}px`;
   selection.style.width = `${rect.width}px`;
   selection.style.height = `${rect.height}px`;
   selectedSurface?.invalidate();
@@ -58,6 +59,7 @@ try {
 addEventListener("resize", repaint, { passive: true });
 addEventListener("resize", placeSelection, { passive: true });
 addEventListener("docs:route", placeSelection);
+selection.addEventListener("transitionend", () => selectedSurface?.invalidate());
 new ResizeObserver(placeSelection).observe(navigation);
 darkQuery.addEventListener("change", () => { root.dataset.mode = dark() ? "dark" : "light"; repaint(); });
 new MutationObserver(repaint).observe(root, { attributes: true, attributeFilter: ["data-theme"] });

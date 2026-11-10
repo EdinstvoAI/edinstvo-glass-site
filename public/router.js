@@ -8,6 +8,14 @@ let dispose = () => {};
 let displayed = location.href;
 let examples;
 
+async function fade(element, frames, duration) {
+  const current = element.animate(frames, { duration, easing: "cubic-bezier(.32,.72,0,1)", fill: "both" });
+  transition = current;
+  await current.finished.catch(() => {});
+  current.cancel();
+  if (transition === current) transition = null;
+}
+
 function saveScroll() {
   history.replaceState({ ...history.state, docScroll: scrollY }, "");
 }
@@ -32,7 +40,7 @@ function scrollToPage(url, position) {
 async function navigate(url, { pop = false, position = 0 } = {}) {
   const id = ++navigation;
   request?.abort();
-  transition?.skipTransition();
+  transition?.cancel();
   request = new AbortController();
   if (!pop) saveScroll();
   document.body.dataset.navigating = "";
@@ -69,22 +77,13 @@ async function navigate(url, { pop = false, position = 0 } = {}) {
       main.focus({ preventScroll: true });
       if (module) dispose = module.mountDemos(main);
       scrollToPage(url, position);
+      return main;
     };
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (document.startViewTransition && !reduced) {
-      document.documentElement.dataset.routeTransition = "";
-      const current = document.startViewTransition(replace);
-      transition = current;
-      current.ready.catch(() => {});
-      await current.updateCallbackDone;
-      const settled = () => {
-        if (transition === current) {
-          transition = null;
-          delete document.documentElement.dataset.routeTransition;
-        }
-      };
-      current.finished.then(settled, settled);
-    } else await replace();
+    if (!reduced) await fade(document.querySelector("main"), [{ opacity: 1 }, { opacity: 0 }], 60);
+    if (id !== navigation) return;
+    const main = replace();
+    if (!reduced && main) await fade(main, [{ opacity: 0 }, { opacity: 1 }], 150);
   } catch (error) {
     if (id !== navigation || error.name === "AbortError") return;
     const main = document.querySelector("main");
