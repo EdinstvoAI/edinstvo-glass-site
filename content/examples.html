@@ -1,18 +1,9 @@
-<p>Small things you can copy. The look is yours, these only show the mechanics.</p>
-<h2>Button</h2>
-<div class="stage" data-stage>
-  <edinstvo-glass class="pill" press="1" glow="1" frost="0.2">Continue</edinstvo-glass>
+<p>Six working compositions built with Edinstvo Glass. Switch scenes, select a surface and change its material. The code below follows your selection.</p>
+<div data-showcase>
+  <div class="scene-picker" role="tablist" aria-label="Examples"></div>
+  <div class="showcase-workspace">
+    <div class="stage showcase-stage" data-stage data-showcase-stage></div>
+    <div class="showcase-controls"></div>
+  </div>
+  <div class="code" data-language="html"><button class="copy" type="button">Copy</button><pre data-example-code></pre></div>
 </div>
-<pre data-code="html"><edinstvo-glass press="1" glow="1" frost="0.2">Continue</edinstvo-glass></pre>
-<h2>Toolbar</h2>
-<div class="stage" data-stage>
-  <edinstvo-glass class="bar"><span>Home</span><span>Search</span><span>Saved</span></edinstvo-glass>
-</div>
-<h2>Morphing card</h2>
-<p>Click it. The only thing that changes is a CSS class.</p>
-<div class="stage" data-stage>
-  <edinstvo-glass class="pill morphing" data-toggle morph="0.8">Open</edinstvo-glass>
-</div>
-<style>.morphing { width: 120px; height: 48px; text-align: center; } .morphing.open { width: 300px; height: 180px; --glass-radius: 32px; }</style>
-<pre data-code="css">.morphing { width: 120px; height: 48px; }
-.morphing.open { width: 300px; height: 180px; }</pre>

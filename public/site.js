@@ -1,9 +1,12 @@
+import "./router.js";
+
 const home = document.body.dataset.home;
 const russian = document.documentElement.lang === "ru";
 const root = document.documentElement;
 
 const isDark = () => (root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches);
 root.dataset.mode = isDark() ? "dark" : "light";
+document.querySelector("[data-search-shortcut]").textContent = navigator.platform.includes("Mac") ? "⌘ K" : "Ctrl K";
 
 document.querySelector(".theme").addEventListener("click", () => {
   const next = isDark() ? "light" : "dark";
@@ -16,7 +19,49 @@ document.querySelector(".theme").addEventListener("click", () => {
   else apply();
 });
 
-document.querySelector(".menu").addEventListener("click", () => document.querySelector(".sidebar").classList.toggle("open"));
+const sidebar = document.querySelector(".sidebar");
+const menu = document.querySelector(".menu");
+const narrow = matchMedia("(max-width: 820px)");
+let menuOpen = false;
+
+function navigationMenu(open, focus = true) {
+  menuOpen = open && narrow.matches;
+  sidebar.classList.toggle("open", menuOpen);
+  sidebar.inert = narrow.matches && !menuOpen;
+  if (menuOpen) sidebar.setAttribute("aria-modal", "true"); else sidebar.removeAttribute("aria-modal");
+  if (menuOpen) sidebar.setAttribute("role", "dialog"); else sidebar.removeAttribute("role");
+  document.body.toggleAttribute("data-menu-open", menuOpen);
+  document.body.style.overflow = menuOpen ? "hidden" : "";
+  menu.setAttribute("aria-expanded", String(menuOpen));
+  for (const element of document.querySelectorAll("header, main, .toc, footer.site")) element.inert = menuOpen;
+  if (focus) (menuOpen ? document.querySelector(".nav-close") : menu).focus();
+}
+menu.addEventListener("click", () => navigationMenu(true));
+document.querySelector(".nav-close").addEventListener("click", () => navigationMenu(false));
+document.querySelector(".nav-scrim").addEventListener("click", () => navigationMenu(false));
+addEventListener("docs:close-menu", () => navigationMenu(false, false));
+narrow.addEventListener("change", () => navigationMenu(false, false));
+navigationMenu(false, false);
+try { sidebar.scrollTop = Number(sessionStorage.getItem("glass-docs-nav-scroll")) || 0; } catch {}
+function revealCurrent() {
+  const active = sidebar.querySelector("a[aria-current]");
+  if (!active) return;
+  const item = active.getBoundingClientRect(), frame = sidebar.getBoundingClientRect();
+  if (item.top < frame.top + 16 || item.bottom > frame.bottom - 16) sidebar.scrollTop += item.top - frame.top - frame.height / 2;
+}
+addEventListener("docs:route", revealCurrent);
+addEventListener("pagehide", () => { try { sessionStorage.setItem("glass-docs-nav-scroll", sidebar.scrollTop); } catch {} });
+revealCurrent();
+addEventListener("keydown", event => {
+  if (!menuOpen) return;
+  if (event.key === "Escape") { event.preventDefault(); navigationMenu(false); }
+  if (event.key === "Tab") {
+    const focusable = [...sidebar.querySelectorAll("a, button")];
+    const first = focusable[0], last = focusable.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+});
 
 document.addEventListener("click", async (event) => {
   const button = event.target.closest(".copy");
@@ -33,10 +78,14 @@ const list = dialog.querySelector("ul");
 let index = null;
 
 async function open() {
+  navigationMenu(false, false);
   dialog.showModal();
   input.select();
   index ??= await fetch(`${home}/search.json`).then((response) => response.json());
 }
+addEventListener("docs:search", async event => {
+  await open(); input.value = event.detail ?? ""; input.dispatchEvent(new Event("input"));
+});
 
 function snippet(text, word) {
   const at = text.toLowerCase().indexOf(word);
@@ -80,7 +129,7 @@ dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
 });
 
-const links = new Map([...document.querySelectorAll('.toc a[href^="#"]')].map((link) => [decodeURIComponent(link.hash.slice(1)), link]));
+let links = new Map();
 const spy = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     if (!entry.isIntersecting) continue;
@@ -88,4 +137,10 @@ const spy = new IntersectionObserver((entries) => {
     links.get(entry.target.id)?.classList.add("here");
   }
 }, { rootMargin: "-120px 0px -70% 0px" });
-for (const id of links.keys()) spy.observe(document.getElementById(id));
+function contents() {
+  spy.disconnect();
+  links = new Map([...document.querySelectorAll('.toc a[href^="#"]')].map(link => [decodeURIComponent(link.hash.slice(1)), link]));
+  for (const id of links.keys()) { const heading = document.getElementById(id); if (heading) spy.observe(heading); }
+}
+addEventListener("docs:route", contents);
+contents();

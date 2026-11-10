@@ -12,7 +12,7 @@ test("new topics are available in both languages and local search", () => {
       const html = readFileSync(`dist/${prefix}/${topic}/index.html`, "utf8");
       assert.ok(html.includes(`<html lang="${language}">`));
       assert.ok(search.some(entry => entry.url.endsWith(`/${topic}/`)));
-      assert.ok(html.includes(language === "ru" ? "Версия для разработки" : "Development preview"));
+      assert.ok(!html.includes(language === "ru" ? "Версия для разработки" : "Development preview"));
     }
   }
 });
@@ -33,13 +33,28 @@ test("built internal links resolve to existing documents and assets", () => {
   }
 });
 
-test("LLM text includes the new API and the development status", () => {
+test("LLM text includes the published API without preview notices", () => {
   const full = readFileSync("dist/llms-full.txt", "utf8");
-  for (const text of ["adaptationDuration", "setSceneMaterial", "dispersion-mode", "view-box", "Development preview"]) assert.ok(full.includes(text), text);
+  for (const text of ["adaptationDuration", "setSceneMaterial", "dispersion-mode", "view-box"]) assert.ok(full.includes(text), text);
+  assert.ok(!full.includes("Development preview"));
 });
 
 test("browser scripts parse without running DOM code", () => {
-  for (const script of ["public/demo.js", "public/site.js"]) execFileSync(process.execPath, ["--check", script]);
+  for (const script of ["public/demo.js", "public/site.js", "public/chrome.js", "public/router.js", "public/examples.js"]) execFileSync(process.execPath, ["--check", script]);
+});
+
+test("each page has a complete sidebar and one active destination", () => {
+  for (const prefix of ["docs", "ru/docs"]) {
+    for (const topic of ["", "optics/", "playground/"]) {
+      const html = readFileSync(`dist/${prefix}/${topic}index.html`, "utf8");
+      const sidebar = html.match(/<aside class="sidebar"[^>]*>([^]*?)<\/aside>/)[1];
+      for (const target of ["installation", "web-components", "optics", "lighting", "figma", "playground", "reference"]) assert.ok(sidebar.includes(`/${target}/`), target);
+      assert.equal((sidebar.match(/aria-current="page"/g) ?? []).length, 1);
+      assert.equal((html.match(/<header>/g) ?? []).length, 1);
+      assert.ok(!html.includes('class="tabs"'));
+      assert.ok(!/<script[^>]*src="[^"]*demo.js"/.test(html));
+    }
+  }
 });
 
 test("API examples escape HTML exactly once", () => {

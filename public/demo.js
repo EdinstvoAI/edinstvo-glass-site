@@ -1,3 +1,5 @@
+import { mountShowcase } from "./examples.js";
+
 const base = document.body.dataset.base;
 const engine = await import(`${base}/glass/index.js`);
 const { defaults, motionDefaults, motionRanges, ranges, setSceneLight } = engine;
@@ -13,6 +15,7 @@ function repaint() {
     paint(stage.querySelector(":scope > canvas"));
     for (const glass of stage.querySelectorAll("edinstvo-glass, edinstvo-glass-group")) glass.invalidate();
   }
+  dispatchEvent(new Event("docs:photo"));
 }
 
 async function usePhoto(file) {
@@ -31,6 +34,7 @@ async function usePhoto(file) {
   finally { image.close(); }
   photo?.close?.();
   photo = canvas;
+  for (const stage of document.querySelectorAll("[data-stage]")) stage.dataset.background = "photo";
   try {
     localStorage.setItem("glass-photo", canvas.toDataURL("image/jpeg", 0.85));
   } catch {}
@@ -53,9 +57,23 @@ function paint(canvas) {
   canvas.height = height * 2;
   const c = canvas.getContext("2d");
   c.scale(2, 2);
-  if (photo) {
+  const background = canvas.parentElement.dataset.background;
+  if (photo && (!background || background === "photo")) {
     const scale = Math.max(width / photo.width, height / photo.height);
     c.drawImage(photo, (width - photo.width * scale) / 2, (height - photo.height * scale) / 2, photo.width * scale, photo.height * scale);
+    return;
+  }
+  if (background === "type" || background === "grid") {
+    c.fillStyle = background === "grid" ? "#262626" : "#eeeeee";
+    c.fillRect(0, 0, width, height);
+    c.strokeStyle = background === "grid" ? "#ffffff30" : "#00000012";
+    c.lineWidth = 1;
+    for (let x = 0; x < width; x += 32) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, height); c.stroke(); }
+    for (let y = 0; y < height; y += 32) { c.beginPath(); c.moveTo(0, y); c.lineTo(width, y); c.stroke(); }
+    c.fillStyle = background === "grid" ? "#fafafa" : "#111111";
+    c.font = `500 ${Math.min(width / 4.3, 110)}px -apple-system, sans-serif`;
+    c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText("Glass", width / 2, height * 0.7);
     return;
   }
   const sky = c.createLinearGradient(0, 0, width, height);
@@ -92,14 +110,26 @@ function drag(element) {
   element.addEventListener("pointerup", () => (from = null));
 }
 
-for (const stage of document.querySelectorAll("[data-stage]")) {
+export function mountDemos(container) {
+const disposals = [];
+const frames = new Set();
+let alive = true;
+function frame(callback) {
+  const handle = requestAnimationFrame(now => { frames.delete(handle); if (alive) callback(now); });
+  frames.add(handle);
+}
+
+for (const stage of container.querySelectorAll("[data-stage]")) {
   const canvas = document.createElement("canvas");
   stage.prepend(canvas);
   paint(canvas);
-  new ResizeObserver(() => {
+  const resize = new ResizeObserver(() => {
+    if (!alive) return;
     paint(canvas);
     for (const glass of stage.querySelectorAll("edinstvo-glass, edinstvo-glass-group")) glass.invalidate();
-  }).observe(stage);
+  });
+  resize.observe(stage);
+  disposals.push(() => resize.disconnect());
   stage.querySelectorAll("[data-drag]").forEach(drag);
   const upload = document.createElement("label");
   upload.className = "upload";
@@ -118,6 +148,7 @@ for (const stage of document.querySelectorAll("[data-stage]")) {
   reset.addEventListener("click", () => {
     photoGeneration++;
     photo?.close?.(); photo = null;
+    for (const current of document.querySelectorAll("[data-stage]")) if (current.dataset.background === "photo") current.dataset.background = current.matches("[data-showcase-stage]") ? "type" : "spectrum";
     try {
       localStorage.removeItem("glass-photo");
     } catch {}
@@ -126,20 +157,25 @@ for (const stage of document.querySelectorAll("[data-stage]")) {
   stage.append(upload, reset);
 }
 
-for (const toggle of document.querySelectorAll("[data-toggle]")) {
+for (const showcase of container.querySelectorAll("[data-showcase]")) disposals.push(mountShowcase(showcase, engine, { paint, drag }));
+
+for (const toggle of container.querySelectorAll("[data-toggle]")) {
   toggle.addEventListener("click", () => toggle.classList.toggle("open"));
 }
 
-for (const stage of document.querySelectorAll("[data-drift]")) {
+for (const stage of container.querySelectorAll("[data-drift]")) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) break;
   const pieces = [...stage.querySelectorAll("[data-drag]")];
   let seen = false;
   let touched = false;
   stage.addEventListener("pointerdown", () => (touched = true), { once: true });
-  new IntersectionObserver(([entry]) => {
+  const visibility = new IntersectionObserver(([entry]) => {
+    if (!alive) return;
     seen = entry.isIntersecting;
-    if (seen) requestAnimationFrame(drift);
-  }).observe(stage);
+    if (seen) frame(drift);
+  });
+  visibility.observe(stage);
+  disposals.push(() => visibility.disconnect());
   function drift(now) {
     if (!seen || touched) return;
     const t = now / 1000;
@@ -148,15 +184,15 @@ for (const stage of document.querySelectorAll("[data-drift]")) {
       const y = Math.cos(t * (0.42 + i * 0.13) + i) * (40 + i * 16);
       piece.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
     });
-    requestAnimationFrame(drift);
+    frame(drift);
   }
 }
 
-const playground = document.querySelector("[data-playground]");
+const playground = container.querySelector("[data-playground]");
 if (playground) {
   const stage = playground.querySelector(".stage");
   const controls = playground.querySelector(".controls");
-  const output = document.querySelector("#snippet");
+  const output = container.querySelector("#snippet");
   const start = { ...defaults, ...motionDefaults };
   const name = (key) => key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
   const changed = {};
@@ -215,7 +251,7 @@ if (playground) {
   }
   for (const event of ["pointerdown", "focusin"]) stage.addEventListener(event, event => { const piece = event.target.closest("edinstvo-glass"); if (piece) select(piece); });
   select(selected);
-  for (const button of document.querySelectorAll("[data-shape]")) {
+  for (const button of container.querySelectorAll("[data-shape]")) {
     button.addEventListener("click", () => {
       if (button.dataset.shape === "clear") {
         stage.querySelectorAll("[data-added-shape]").forEach((piece) => piece.remove());
@@ -237,18 +273,18 @@ if (playground) {
 }
 
 for (const [attribute, selector, available] of [["adaptation", "[data-adaptation-control]", Boolean(engine.setSceneMaterial)], ["shape", "[data-geometry-control]", Boolean(engine.geometryDefaults)]]) {
-  const control = document.querySelector(selector);
+  const control = container.querySelector(selector);
   if (!control) continue;
-  const stage = document.querySelector(attribute === "shape" ? "[data-geometry-demo]" : "[data-adaptation-demo]");
+  const stage = container.querySelector(attribute === "shape" ? "[data-geometry-demo]" : "[data-adaptation-demo]");
   if (!available) {
     control.disabled = true;
     stage.querySelectorAll("edinstvo-glass").forEach(glass => glass.remove());
     const message = document.createElement("p"); message.className = "preview-message";
-    message.textContent = ru ? "Пример доступен в сборке Dev." : "This example requires the Dev build."; stage.append(message);
+    message.textContent = ru ? "Обновите пакет, чтобы открыть этот пример." : "Update the package to use this example."; stage.append(message);
   } else control.addEventListener("change", () => stage.querySelectorAll("edinstvo-glass").forEach(glass => glass.setAttribute(attribute, control.value)));
 }
 
-for (const panel of document.querySelectorAll("[data-lights]")) {
+for (const panel of container.querySelectorAll("[data-lights]")) {
   const read = () => {
     const light = {};
     for (const input of panel.querySelectorAll("input:not([type=checkbox])")) light[input.name] = input.type === "range" ? Number(input.value) : input.value;
@@ -256,7 +292,7 @@ for (const panel of document.querySelectorAll("[data-lights]")) {
   };
   panel.addEventListener("input", (event) => {
     if (event.target.type !== "checkbox") return read();
-    for (const glass of document.querySelectorAll(".stage edinstvo-glass")) {
+    for (const glass of container.querySelectorAll(".stage edinstvo-glass")) {
       if (event.target.checked) {
         if (!glass.hasAttribute(event.target.name)) {
           glass.setAttribute(event.target.name, "0.7");
@@ -271,8 +307,8 @@ for (const panel of document.querySelectorAll("[data-lights]")) {
   read();
 }
 
-for (const stage of document.querySelectorAll("[data-load]")) {
-  const controls = document.querySelector("[data-load-controls]");
+for (const stage of container.querySelectorAll("[data-load]")) {
+  const controls = container.querySelector("[data-load-controls]");
   const count = controls.querySelector("[name=count]");
   const moving = controls.querySelector("[name=moving]");
   const pieces = [];
@@ -289,7 +325,7 @@ for (const stage of document.querySelectorAll("[data-load]")) {
   };
   count.addEventListener("input", fit);
   fit();
-  const show = (name, text) => (document.querySelector(`[data-${name}]`).textContent = text);
+  const show = (name, text) => (container.querySelector(`[data-${name}]`).textContent = text);
   let last = performance.now();
   let frames = [];
   let shown = last;
@@ -310,7 +346,16 @@ for (const stage of document.querySelectorAll("[data-load]")) {
       frames = [];
       shown = now;
     }
-    requestAnimationFrame(tick);
+    frame(tick);
   };
-  requestAnimationFrame(tick);
+  frame(tick);
+}
+
+return () => {
+  alive = false;
+  photoGeneration++;
+  frames.forEach(cancelAnimationFrame);
+  disposals.forEach(dispose => dispose());
+  if (container.querySelector("[data-lights]")) setSceneLight(null);
+};
 }
