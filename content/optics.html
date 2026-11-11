@@ -1,10 +1,18 @@
 <p>Refraction, reflection and dispersion share a screen-space dielectric model.</p>
+<h2>Tune edge refraction</h2>
+<p>Start with <code>refraction</code>. It scales the bend you see in the backdrop. <code>thickness</code> controls how far the backdrop shifts, <code>depth</code> sets the width of the curved edge, and <code>dispersion</code> controls the color fringe.</p>
+<p>Since 1.1.5, the rim bends the backdrop more strongly and retains detail on frosted glass. Artistic dispersion follows that bend and grows toward the edge. Try the settings below with <code>#scene</code> pointing at an existing image or canvas with lines or text.</p>
+<pre data-code="html"><edinstvo-glass source="#scene" refraction="0.85"
+  thickness="24" depth="18" dispersion="0.3" frost="0.15">
+  Content
+</edinstvo-glass></pre>
+<p>If the glass only blurs, check that it has a backdrop source with visible detail and is rendering with WebGL 2. CSS fallback provides blur and tint.</p>
 <h2>Index and optical path</h2>
 <p><code>ior</code> is the refractive index: 1–2.4, default 1.5. An index of 1 matches air and causes no geometric refraction. Snell refraction uses a thickness-bounded curved profile. <code>thickness</code> is optical depth in CSS pixels, 0–96, default 6; <code>depth</code> is curve width. The independent <code>strokeThickness</code>, 0–8 px, default 1, controls the rim line.</p>
 <h2>Fresnel reflection</h2>
 <p>When reflection is enabled, the unpolarized dielectric Fresnel equations mix transmitted and reflected colors. Reflection strengthens at grazing surface angles. The environment is the supplied scene image; hidden 3D surroundings are not reconstructed.</p>
 <h2>Two dispersion models</h2>
-<table><tr><th>Mode</th><th>Behavior</th></tr><tr><td><code>artistic</code></td><td>Intentional RGB offsets; default.</td></tr><tr><td><code>physical</code></td><td>Cauchy approximation at 610, 550 and 460 nm, with a generic coefficient scaled by dispersion.</td></tr></table>
+<table><tr><th>Mode</th><th>Behavior</th></tr><tr><td><code>artistic</code></td><td>RGB separation follows the refracted ray and grows at the edge. Default mode.</td></tr><tr><td><code>physical</code></td><td>Cauchy approximation at 610, 550 and 460 nm, with a generic coefficient scaled by dispersion.</td></tr></table>
 <p><code>dispersion="0"</code> disables channel separation. Physical separation follows surface incidence and optical path, not the decorative directional light angle. It is not calibrated to a glass catalog or a full spectral solution.</p>
 <pre data-code="html"><edinstvo-glass ior="1.5" thickness="12" depth="12"
   reflection="1" dispersion-mode="physical" dispersion="0.5" frost="0.1">

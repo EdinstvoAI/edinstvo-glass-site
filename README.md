@@ -17,7 +17,7 @@ GLASS_SOURCE=../edinstvo-glass npm run dev
 
 The site runs at `http://localhost:4392/docs/`; Russian content is under `/ru/docs/`. `PORT` overrides the local port. The server binds to loopback by default; `HOST` can override that deliberately.
 
-`GLASS_SOURCE` only changes the package source copied into the generated site. It does not publish a package or change the npm dependency. The public documentation targets 1.1.4; older installations show an update message when an example needs an unavailable API.
+`GLASS_SOURCE` only changes the package source copied into the generated site. It does not publish a package or change the npm dependency. The public documentation targets 1.1.5; older installations show an update message when an example needs an unavailable API.
 
 ## Content and builds
 
